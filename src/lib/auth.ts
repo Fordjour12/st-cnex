@@ -1,19 +1,24 @@
-import { db } from "@ts-connnect/db";
-import * as schema from "@ts-connnect/db/schema/auth";
-import { env } from "@ts-connnect/env/server";
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { tanstackStartCookies } from "better-auth/tanstack-start";
+import { db } from '@/db'
+import * as schema from '@/db/schema/auth'
+import { betterAuth } from 'better-auth'
+import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { tanstackStartCookies } from 'better-auth/tanstack-start'
+
+const corsOrigin = process.env.CORS_ORIGIN
+
+if (!corsOrigin) {
+  throw new Error('CORS_ORIGIN is not set')
+}
 
 export const auth = betterAuth({
-   database: drizzleAdapter(db, {
-      provider: "pg",
+  database: drizzleAdapter(db, {
+    provider: 'pg',
 
-      schema: schema,
-   }),
-   trustedOrigins: [env.CORS_ORIGIN],
-   emailAndPassword: {
-      enabled: true,
-   },
-   plugins: [tanstackStartCookies()],
-});
+    schema: schema,
+  }),
+  trustedOrigins: [corsOrigin],
+  emailAndPassword: {
+    enabled: true,
+  },
+  plugins: [tanstackStartCookies()],
+})
