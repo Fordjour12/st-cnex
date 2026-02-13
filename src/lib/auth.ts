@@ -1,8 +1,10 @@
-import { db } from '@/db'
-import * as schema from '@/db/schema/auth'
 import { betterAuth } from 'better-auth'
+import { admin } from 'better-auth/plugins'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
+
+import { db } from '@/db'
+import * as schema from '@/db/schema/auth'
 
 const corsOrigin = process.env.CORS_ORIGIN
 
@@ -20,5 +22,5 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  plugins: [tanstackStartCookies()],
+  plugins: [tanstackStartCookies(), admin()],
 })
