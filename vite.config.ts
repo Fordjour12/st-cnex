@@ -8,13 +8,13 @@ import { nitro } from 'nitro/vite'
 
 export default defineConfig({
   plugins: [
+    tanstackStart(),
     devtools(),
     nitro(),
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],
     }),
     tailwindcss(),
-    tanstackStart(),
     viteReact(),
   ],
 })

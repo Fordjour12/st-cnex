@@ -1,10 +1,12 @@
-"use client";
-
+import { useState } from 'react'
+import { ChevronDown, ChevronUp } from '@hugeicons/core-free-icons'
+import { Link } from '@tanstack/react-router'
+import type React from 'react'
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+} from '@/components/ui/collapsible'
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -13,35 +15,31 @@ import {
   SidebarMenuSubButton,
   SidebarMenuItem as SidebarMenuSubItem,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import Link from "next/link";
-import type React from "react";
-import { useState } from "react";
+} from '@/components/ui/sidebar'
+import { cn } from '@/lib/utils'
 
 export type Route = {
-  id: string;
-  title: string;
-  icon?: React.ReactNode;
-  link: string;
+  id: string
+  title: string
+  icon?: React.ReactNode
+  link: string
   subs?: {
-    title: string;
-    link: string;
-    icon?: React.ReactNode;
-  }[];
-};
+    title: string
+    link: string
+    icon?: React.ReactNode
+  }[]
+}
 
 export default function DashboardNavigation({ routes }: { routes: Route[] }) {
-  const { state } = useSidebar();
-  const isCollapsed = state === "collapsed";
-  const [openCollapsible, setOpenCollapsible] = useState<string | null>(null);
+  const { state } = useSidebar()
+  const isCollapsed = state === 'collapsed'
+  const [openCollapsible, setOpenCollapsible] = useState<string | null>(null)
 
   return (
     <SidebarMenu>
       {routes.map((route) => {
-        const isOpen = !isCollapsed && openCollapsible === route.id;
-        const hasSubRoutes = !!route.subs?.length;
+        const isOpen = !isCollapsed && openCollapsible === route.id
+        const hasSubRoutes = !!route.subs?.length
 
         return (
           <SidebarMenuItem key={route.id}>
@@ -53,25 +51,35 @@ export default function DashboardNavigation({ routes }: { routes: Route[] }) {
                 }
                 className="w-full"
               >
-                <CollapsibleTrigger render={<SidebarMenuButton className={cn(
-                                              "flex w-full items-center rounded-lg px-2 transition-colors",
-                                              isOpen
-                                                ? "bg-sidebar-muted text-foreground"
-                                                : "text-muted-foreground hover:bg-sidebar-muted hover:text-foreground",
-                                              isCollapsed && "justify-center"
-                                            )} />}>{route.icon}{!isCollapsed && (
-                                              <span className="ml-2 flex-1 text-sm font-medium">
-                                                {route.title}
-                                              </span>
-                                            )}{!isCollapsed && hasSubRoutes && (
-                                              <span className="ml-auto">
-                                                {isOpen ? (
-                                                  <ChevronUp className="size-4" />
-                                                ) : (
-                                                  <ChevronDown className="size-4" />
-                                                )}
-                                              </span>
-                                            )}</CollapsibleTrigger>
+                <CollapsibleTrigger
+                  render={
+                    <SidebarMenuButton
+                      className={cn(
+                        'flex w-full items-center rounded-lg px-2 transition-colors',
+                        isOpen
+                          ? 'bg-sidebar-muted text-foreground'
+                          : 'text-muted-foreground hover:bg-sidebar-muted hover:text-foreground',
+                        isCollapsed && 'justify-center',
+                      )}
+                    />
+                  }
+                >
+                  {route.icon}
+                  {!isCollapsed && (
+                    <span className="ml-2 flex-1 text-sm font-medium">
+                      {route.title}
+                    </span>
+                  )}
+                  {!isCollapsed && hasSubRoutes && (
+                    <span className="ml-auto">
+                      {isOpen ? (
+                        <ChevronUp className="size-4" />
+                      ) : (
+                        <ChevronDown className="size-4" />
+                      )}
+                    </span>
+                  )}
+                </CollapsibleTrigger>
 
                 {!isCollapsed && (
                   <CollapsibleContent>
@@ -81,7 +89,16 @@ export default function DashboardNavigation({ routes }: { routes: Route[] }) {
                           key={`${route.id}-${subRoute.title}`}
                           className="h-auto"
                         >
-                          <SidebarMenuSubButton render={<Link href={subRoute.link} prefetch={true} className="flex items-center rounded-md px-4 py-1.5 text-sm font-medium text-muted-foreground hover:bg-sidebar-muted hover:text-foreground" />} nativeButton={false}>{subRoute.title}</SidebarMenuSubButton>
+                          <SidebarMenuSubButton
+                            render={
+                              <Link
+                                to={subRoute.link}
+                                className="flex items-center rounded-md px-4 py-1.5 text-sm font-medium text-muted-foreground hover:bg-sidebar-muted hover:text-foreground"
+                              />
+                            }
+                          >
+                            {subRoute.title}
+                          </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       ))}
                     </SidebarMenuSub>
@@ -89,18 +106,29 @@ export default function DashboardNavigation({ routes }: { routes: Route[] }) {
                 )}
               </Collapsible>
             ) : (
-              <SidebarMenuButton tooltip={route.title} render={<Link href={route.link} prefetch={true} className={cn(
-                                            "flex items-center rounded-lg px-2 transition-colors text-muted-foreground hover:bg-sidebar-muted hover:text-foreground",
-                                            isCollapsed && "justify-center"
-                                          )} />} nativeButton={false}>{route.icon}{!isCollapsed && (
-                                            <span className="ml-2 text-sm font-medium">
-                                              {route.title}
-                                            </span>
-                                          )}</SidebarMenuButton>
+              <SidebarMenuButton
+                tooltip={route.title}
+                render={
+                  <Link
+                    to={route.link}
+                    className={cn(
+                      'flex items-center rounded-lg px-2 transition-colors text-muted-foreground hover:bg-sidebar-muted hover:text-foreground',
+                      isCollapsed && 'justify-center',
+                    )}
+                  />
+                }
+              >
+                {route.icon}
+                {!isCollapsed && (
+                  <span className="ml-2 text-sm font-medium">
+                    {route.title}
+                  </span>
+                )}
+              </SidebarMenuButton>
             )}
           </SidebarMenuItem>
-        );
+        )
       })}
     </SidebarMenu>
-  );
+  )
 }

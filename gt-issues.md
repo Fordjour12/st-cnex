@@ -11,11 +11,11 @@ Set up PostgreSQL database with Drizzle ORM and create all necessary tables for 
 
 **Acceptance Criteria:**
 
-- [ ] Install and configure Drizzle ORM with PostgreSQL
-- [ ] Create migration files for all tables (users, roles, permissions, etc.)
-- [ ] Add proper indexes on frequently queried columns
-- [ ] Set up foreign key constraints with cascade rules
-- [ ] Create database connection pool configuration
+- [x] Install and configure Drizzle ORM with PostgreSQL
+- [x] Create migration files for all tables (users, roles, permissions, etc.)
+- [x] Add proper indexes on frequently queried columns
+- [x] Set up foreign key constraints with cascade rules
+- [x] Create database connection pool configuration
 - [ ] Add development seed data script
 - [ ] Document database schema in README
 
@@ -52,14 +52,14 @@ Implement secure authentication system with session management for admin users.
 
 **Acceptance Criteria:**
 
-- [ ] Set up session-based authentication (or JWT)
-- [ ] Create login/logout endpoints
-- [ ] Implement password hashing with bcrypt
-- [ ] Add session middleware for route protection
-- [ ] Create `getSessionUser()` helper function
-- [ ] Add CSRF protection
-- [ ] Implement "Remember Me" functionality
-- [ ] Add session expiration (30 days inactive)
+- [x] Set up session-based authentication (or JWT)
+- [x] Create login/logout endpoints
+- [x] Implement password hashing with bcrypt
+- [x] Add session middleware for route protection
+- [x] Create `getSessionUser()` helper function
+- [x] Add CSRF protection
+- [x] Implement "Remember Me" functionality
+- [x] Add session expiration (30 days inactive)
 
 **Security Requirements:**
 
@@ -85,10 +85,10 @@ Build a flexible RBAC system with granular permissions for different admin roles
 
 **Acceptance Criteria:**
 
-- [ ] Define all permissions in `src/lib/permissions.ts`
-- [ ] Create `RBACService` class with permission checking methods
-- [ ] Implement `hasPermission()`, `hasAnyPermission()`, `hasAllPermissions()`
-- [ ] Create middleware for permission-based route protection
+- [x] Define all permissions in `src/lib/permissions.ts`
+- [x] Create `RBACService` class with permission checking methods
+- [x] Implement `hasPermission()`, `hasAnyPermission()`, `hasAllPermissions()`
+- [x] Create middleware for permission-based route protection
 - [ ] Add permission decorators for server functions
 - [ ] Build permission inheritance system
 - [ ] Add unit tests for RBAC logic (>90% coverage)
@@ -151,15 +151,15 @@ Build the main user management page with advanced filtering, search, and paginat
 
 **Acceptance Criteria:**
 
-- [ ] Create `/admin/users` route with proper auth protection
-- [ ] Implement TanStack Table with sortable columns
+- [x] Create `/admin/users` route with proper auth protection
+- [x] Implement TanStack Table with sortable columns
 - [ ] Add filters: Status (active/suspended/banned), Role (founder/investor/talent)
-- [ ] Add search by email, name (debounced, 300ms)
-- [ ] Implement pagination (20 users per page)
+- [x] Add search by email, name (debounced, 300ms)
+- [x] Implement pagination (20 users per page)
 - [ ] Add bulk actions: Suspend, Ban, Export CSV
-- [ ] Show user avatar, name, email, role, status, join date, last login
-- [ ] Add loading states and error handling
-- [ ] Responsive design (mobile-friendly)
+- [x] Show user avatar, name, email, role, status, join date, last login
+- [x] Add loading states and error handling
+- [x] Responsive design (mobile-friendly)
 
 **UI Components:**
 
@@ -171,10 +171,10 @@ Build the main user management page with advanced filtering, search, and paginat
 
 **Files to Create:**
 
-- `src/routes/admin/users/index.tsx`
+- `src/routes/admin/_layout/users/index.tsx`
 - `src/components/admin/UsersTable.tsx`
 - `src/components/admin/UserFilters.tsx`
-- `src/app/api/admin/users.ts`
+- `src/lib/server/admin/users.ts`
 
 ---
 
@@ -187,13 +187,13 @@ Create detailed user profile page for admins to view and manage individual users
 
 **Acceptance Criteria:**
 
-- [ ] Create `/admin/users/[userId]` route
-- [ ] Display user information: Email, Name, Status, Roles, Join Date
-- [ ] Show profile type (Founder/Investor/Talent) with specific fields
+- [x] Create `/admin/users/[userId]` route
+- [x] Display user information: Email, Name, Status, Roles, Join Date
+- [x] Show profile type (Founder/Investor/Talent) with specific fields
 - [ ] Display activity timeline (login history, profile updates)
-- [ ] Show suspension history with reasons and durations
+- [x] Show suspension history with reasons and durations
 - [ ] Add actions: Edit User, Suspend, Ban, Delete, Verify Investor
-- [ ] Show linked startup/investor/talent profile data
+- [x] Show linked startup/investor/talent profile data
 - [ ] Add notes section (admin-only internal notes)
 - [ ] Display audit log for this user
 
@@ -208,10 +208,10 @@ Create detailed user profile page for admins to view and manage individual users
 
 **Files to Create:**
 
-- `src/routes/admin/users/$userId.tsx`
+- `src/routes/admin/_layout/users/$userId.tsx`
 - `src/components/admin/UserDetailView.tsx`
 - `src/components/admin/UserActivityTimeline.tsx`
-- `src/app/api/admin/users/[userId].ts`
+- `src/lib/server/admin/users.ts`
 
 ---
 
@@ -224,13 +224,13 @@ Implement backend logic and UI for suspending and banning users with reason trac
 
 **Acceptance Criteria:**
 
-- [ ] Create `UserService.suspendUser()` method
-- [ ] Create `UserService.banUser()` method
-- [ ] Create `UserService.liftSuspension()` method
-- [ ] Add validation: Reason required (min 10 chars)
-- [ ] Support temporary suspensions with expiration date
-- [ ] Support permanent bans (expiresAt = null)
-- [ ] Create audit log entry for every action
+- [x] Create `UserService.suspendUser()` method
+- [x] Create `UserService.banUser()` method
+- [x] Create `UserService.liftSuspension()` method
+- [x] Add validation: Reason required (min 10 chars)
+- [x] Support temporary suspensions with expiration date
+- [x] Support permanent bans (expiresAt = null)
+- [x] Create audit log entry for every action
 - [ ] Send email notification to suspended/banned user
 - [ ] Add UI modal for suspend/ban with form
 - [ ] Show confirmation dialog before action
@@ -245,11 +245,10 @@ Implement backend logic and UI for suspending and banning users with reason trac
 
 **Files to Create:**
 
-- `src/services/user.service.ts`
+- `src/lib/server/user.ts`
 - `src/components/admin/SuspendUserModal.tsx`
 - `src/components/admin/BanUserModal.tsx`
-- `src/app/api/admin/users/suspend.ts`
-- `src/app/api/admin/users/ban.ts`
+- `src/lib/server/admin/users.ts`
 
 ---
 
