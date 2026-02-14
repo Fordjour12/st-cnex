@@ -1,3 +1,5 @@
+import { and, asc, desc, eq, gte, ilike, isNull, or, sql } from 'drizzle-orm'
+
 import { db } from '@/db'
 import { user } from '@/db/schema/auth'
 import {
@@ -6,7 +8,6 @@ import {
   talentProfiles,
 } from '@/db/schema/profile'
 import { auditLogs, userSuspensions } from '@/db/schema/rbac'
-import { eq, ilike, desc, asc, sql, and, isNull, or, gte } from 'drizzle-orm'
 
 export class UserService {
   static async getUsers(params: {
@@ -17,24 +18,29 @@ export class UserService {
     sortBy?: 'createdAt' | 'email'
     sortOrder?: 'asc' | 'desc'
   }) {
-    const { page = 1, limit = 20, search, sortOrder = 'desc' } = params
+    const { page = 1, limit = 20, search, role, sortBy = 'createdAt', sortOrder = 'desc' } = params
 
     const offset = (page - 1) * limit
 
     const orderFn = sortOrder === 'desc' ? desc : asc
+    const sortColumn = sortBy === 'email' ? user.email : user.createdAt
+    const filters = and(
+      search ? ilike(user.email, `%${search}%`) : undefined,
+      role ? ilike(user.role, `%${role}%`) : undefined,
+    )
 
     const result = await db
       .select()
       .from(user)
-      .where(search ? ilike(user.email, `%${search}%`) : undefined)
+      .where(filters)
       .limit(limit)
       .offset(offset)
-      .orderBy(orderFn(user.createdAt))
+      .orderBy(orderFn(sortColumn))
 
     const [{ count }] = await db
       .select({ count: sql<number>`count(*)::int` })
       .from(user)
-      .where(search ? ilike(user.email, `%${search}%`) : undefined)
+      .where(filters)
 
     return {
       users: result,
@@ -101,7 +107,7 @@ export class UserService {
     investorType: string
     investmentRangeMin?: string
     investmentRangeMax?: string
-    industriesOfInterest?: string[]
+    industriesOfInterest?: Array<string>
     bio?: string
   }) {
     const {
@@ -127,7 +133,7 @@ export class UserService {
     userId: string
     role: string
     title?: string
-    skills?: string[]
+    skills?: Array<string>
     experienceYears?: number
     bio?: string
     availability?: string
@@ -168,7 +174,7 @@ export class UserService {
     investorType?: string
     investmentRangeMin?: string
     investmentRangeMax?: string
-    industriesOfInterest?: string[]
+    industriesOfInterest?: Array<string>
     bio?: string
     linkedinUrl?: string
   }) {
@@ -184,7 +190,7 @@ export class UserService {
     userId: string
     role?: string
     title?: string
-    skills?: string[]
+    skills?: Array<string>
     experienceYears?: number
     bio?: string
     availability?: string
