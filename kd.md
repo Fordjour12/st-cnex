@@ -1397,19 +1397,19 @@ function AdminUsersPage() {
 
 **Sprint 1.1: Database & Auth Setup**
 
-- [ ] Set up PostgreSQL + Drizzle ORM
-- [ ] Set up better-auth with database adapter
-- [ ] Create all database tables with indexes
+- [x] Set up PostgreSQL + Drizzle ORM
+- [x] Set up better-auth with database adapter
+- [x] Create all database tables with indexes
 - [x] Seed initial roles and permissions
-- [ ] Configure better-auth (sign in, sign up, session)
+- [x] Configure better-auth (sign in, sign up, session)
 - [ ] Set up OAuth providers (Google, GitHub)
 
 **Sprint 1.2: RBAC Implementation**
 
-- [ ] Build RBACService with permission checks
-- [ ] Create userRoles table and relations
+- [x] Build RBACService with permission checks
+- [x] Create userRoles table and relations
 - [x] Create middleware for route protection
-- [ ] Test permission enforcement
+- [x] Test permission enforcement
 - [x] Create admin user seeding script
 
 ---
@@ -1539,8 +1539,8 @@ function AdminUsersPage() {
 
 - [ ] Two-factor authentication (better-auth supports 2FA)
 - [ ] OAuth providers configured securely
-- [ ] Role-based access enforced at DB level
-- [ ] Regular permission audits
+- [x] Role-based access enforced at DB level
+- [x] Regular permission audits
 
 ---
 
@@ -1552,7 +1552,7 @@ function AdminUsersPage() {
 - [x] All API endpoints check permissions
 - [x] better-auth session cookies properly secured (httpOnly, secure, sameSite)
 - [x] Role-based access enforced at DB level
-- [x] OAuth providers configured securely
+- [ ] OAuth providers configured securely
 
 ✅ **Data Protection**
 
@@ -1565,7 +1565,7 @@ function AdminUsersPage() {
 
 - [x] Rate limiting on admin endpoints
 - [x] IP logging for admin actions
-- [x] Two-factor authentication (better-auth supports 2FA)
+- [ ] Two-factor authentication (better-auth supports 2FA)
 - [x] Regular permission audits
 
 ✅ **Session Management (better-auth Admin)**
