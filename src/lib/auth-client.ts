@@ -1,14 +1,35 @@
 import { createAuthClient } from 'better-auth/client'
-import { adminClient } from 'better-auth/client/plugins'
+import { adminClient, organizationClient } from 'better-auth/client/plugins'
 
 const baseURL = typeof window !== 'undefined' ? window.location.origin : ''
 
 export const authClient = createAuthClient({
   baseURL,
-  plugins: [adminClient()],
+  plugins: [
+    adminClient(),
+    organizationClient({
+      teams: {
+        enabled: true,
+      },
+      schema: {
+        organization: {
+          additionalFields: {
+            type: {
+              type: 'string',
+              input: true,
+              required: true,
+              defaultValue: 'startup',
+            },
+          },
+        },
+      },
+    }),
+  ],
 })
 
-export const { admin } = authClient
+export const { admin, organization } = authClient
+
+export type OrganizationType = 'startup' | 'investor' | 'accelerator'
 
 export type SignInData = {
   email: string

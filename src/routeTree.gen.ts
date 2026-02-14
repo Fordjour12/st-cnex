@@ -12,16 +12,21 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthLayoutRouteImport } from './routes/auth/_layout'
 import { Route as AdminLayoutRouteImport } from './routes/admin/_layout'
+import { Route as AcceptInvitationInvitationIdRouteImport } from './routes/accept-invitation/$invitationId'
 import { Route as AdminLayoutIndexRouteImport } from './routes/admin/_layout/index'
+import { Route as DashboardOrganizationsNewRouteImport } from './routes/dashboard/organizations/new'
 import { Route as AuthLayoutSignInRouteImport } from './routes/auth/_layout/sign-in'
 import { Route as AuthLayoutCreateAccountRouteImport } from './routes/auth/_layout/create-account'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AdminLayoutUsersIndexRouteImport } from './routes/admin/_layout/users/index'
 import { Route as AdminLayoutReportsIndexRouteImport } from './routes/admin/_layout/reports/index'
+import { Route as DashboardOrganizationsOrgIdTeamsRouteImport } from './routes/dashboard/organizations/$orgId/teams'
+import { Route as DashboardOrganizationsOrgIdMembersRouteImport } from './routes/dashboard/organizations/$orgId/members'
 import { Route as AuthLayoutAdminSignInRouteImport } from './routes/auth/_layout/admin/sign-in'
 import { Route as AuthLayoutAdminResetPasswordRouteImport } from './routes/auth/_layout/admin/reset-password'
 import { Route as AdminLayoutUsersUserIdRouteImport } from './routes/admin/_layout/users/$userId'
 import { Route as AdminLayoutReportsReportIdRouteImport } from './routes/admin/_layout/reports/$reportId'
+import { Route as AdminLayoutInvestorsVerificationRouteImport } from './routes/admin/_layout/investors/verification'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -38,11 +43,23 @@ const AdminLayoutRoute = AdminLayoutRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AcceptInvitationInvitationIdRoute =
+  AcceptInvitationInvitationIdRouteImport.update({
+    id: '/accept-invitation/$invitationId',
+    path: '/accept-invitation/$invitationId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminLayoutIndexRoute = AdminLayoutIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminLayoutRoute,
 } as any)
+const DashboardOrganizationsNewRoute =
+  DashboardOrganizationsNewRouteImport.update({
+    id: '/dashboard/organizations/new',
+    path: '/dashboard/organizations/new',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthLayoutSignInRoute = AuthLayoutSignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
@@ -68,6 +85,18 @@ const AdminLayoutReportsIndexRoute = AdminLayoutReportsIndexRouteImport.update({
   path: '/reports/',
   getParentRoute: () => AdminLayoutRoute,
 } as any)
+const DashboardOrganizationsOrgIdTeamsRoute =
+  DashboardOrganizationsOrgIdTeamsRouteImport.update({
+    id: '/dashboard/organizations/$orgId/teams',
+    path: '/dashboard/organizations/$orgId/teams',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DashboardOrganizationsOrgIdMembersRoute =
+  DashboardOrganizationsOrgIdMembersRouteImport.update({
+    id: '/dashboard/organizations/$orgId/members',
+    path: '/dashboard/organizations/$orgId/members',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthLayoutAdminSignInRoute = AuthLayoutAdminSignInRouteImport.update({
   id: '/admin/sign-in',
   path: '/admin/sign-in',
@@ -90,104 +119,144 @@ const AdminLayoutReportsReportIdRoute =
     path: '/reports/$reportId',
     getParentRoute: () => AdminLayoutRoute,
   } as any)
+const AdminLayoutInvestorsVerificationRoute =
+  AdminLayoutInvestorsVerificationRouteImport.update({
+    id: '/investors/verification',
+    path: '/investors/verification',
+    getParentRoute: () => AdminLayoutRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/accept-invitation/$invitationId': typeof AcceptInvitationInvitationIdRoute
   '/admin': typeof AdminLayoutRouteWithChildren
   '/auth': typeof AuthLayoutRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/auth/create-account': typeof AuthLayoutCreateAccountRoute
   '/auth/sign-in': typeof AuthLayoutSignInRoute
+  '/dashboard/organizations/new': typeof DashboardOrganizationsNewRoute
   '/admin/': typeof AdminLayoutIndexRoute
+  '/admin/investors/verification': typeof AdminLayoutInvestorsVerificationRoute
+  '/admin/reports/$reportId': typeof AdminLayoutReportsReportIdRoute
   '/admin/users/$userId': typeof AdminLayoutUsersUserIdRoute
   '/auth/admin/reset-password': typeof AuthLayoutAdminResetPasswordRoute
   '/auth/admin/sign-in': typeof AuthLayoutAdminSignInRoute
-  '/admin/users/': typeof AdminLayoutUsersIndexRoute
+  '/dashboard/organizations/$orgId/members': typeof DashboardOrganizationsOrgIdMembersRoute
+  '/dashboard/organizations/$orgId/teams': typeof DashboardOrganizationsOrgIdTeamsRoute
   '/admin/reports/': typeof AdminLayoutReportsIndexRoute
-  '/admin/reports/$reportId': typeof AdminLayoutReportsReportIdRoute
+  '/admin/users/': typeof AdminLayoutUsersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/accept-invitation/$invitationId': typeof AcceptInvitationInvitationIdRoute
   '/auth': typeof AuthLayoutRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/auth/create-account': typeof AuthLayoutCreateAccountRoute
   '/auth/sign-in': typeof AuthLayoutSignInRoute
+  '/dashboard/organizations/new': typeof DashboardOrganizationsNewRoute
   '/admin': typeof AdminLayoutIndexRoute
+  '/admin/investors/verification': typeof AdminLayoutInvestorsVerificationRoute
+  '/admin/reports/$reportId': typeof AdminLayoutReportsReportIdRoute
   '/admin/users/$userId': typeof AdminLayoutUsersUserIdRoute
   '/auth/admin/reset-password': typeof AuthLayoutAdminResetPasswordRoute
   '/auth/admin/sign-in': typeof AuthLayoutAdminSignInRoute
-  '/admin/users': typeof AdminLayoutUsersIndexRoute
+  '/dashboard/organizations/$orgId/members': typeof DashboardOrganizationsOrgIdMembersRoute
+  '/dashboard/organizations/$orgId/teams': typeof DashboardOrganizationsOrgIdTeamsRoute
   '/admin/reports': typeof AdminLayoutReportsIndexRoute
-  '/admin/reports/$reportId': typeof AdminLayoutReportsReportIdRoute
+  '/admin/users': typeof AdminLayoutUsersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/accept-invitation/$invitationId': typeof AcceptInvitationInvitationIdRoute
   '/admin/_layout': typeof AdminLayoutRouteWithChildren
   '/auth/_layout': typeof AuthLayoutRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/auth/_layout/create-account': typeof AuthLayoutCreateAccountRoute
   '/auth/_layout/sign-in': typeof AuthLayoutSignInRoute
+  '/dashboard/organizations/new': typeof DashboardOrganizationsNewRoute
   '/admin/_layout/': typeof AdminLayoutIndexRoute
+  '/admin/_layout/investors/verification': typeof AdminLayoutInvestorsVerificationRoute
+  '/admin/_layout/reports/$reportId': typeof AdminLayoutReportsReportIdRoute
   '/admin/_layout/users/$userId': typeof AdminLayoutUsersUserIdRoute
   '/auth/_layout/admin/reset-password': typeof AuthLayoutAdminResetPasswordRoute
   '/auth/_layout/admin/sign-in': typeof AuthLayoutAdminSignInRoute
-  '/admin/_layout/users/': typeof AdminLayoutUsersIndexRoute
+  '/dashboard/organizations/$orgId/members': typeof DashboardOrganizationsOrgIdMembersRoute
+  '/dashboard/organizations/$orgId/teams': typeof DashboardOrganizationsOrgIdTeamsRoute
   '/admin/_layout/reports/': typeof AdminLayoutReportsIndexRoute
-  '/admin/_layout/reports/$reportId': typeof AdminLayoutReportsReportIdRoute
+  '/admin/_layout/users/': typeof AdminLayoutUsersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/accept-invitation/$invitationId'
     | '/admin'
     | '/auth'
     | '/api/auth/$'
     | '/auth/create-account'
     | '/auth/sign-in'
+    | '/dashboard/organizations/new'
     | '/admin/'
+    | '/admin/investors/verification'
+    | '/admin/reports/$reportId'
     | '/admin/users/$userId'
     | '/auth/admin/reset-password'
     | '/auth/admin/sign-in'
-    | '/admin/users/'
+    | '/dashboard/organizations/$orgId/members'
+    | '/dashboard/organizations/$orgId/teams'
     | '/admin/reports/'
-    | '/admin/reports/$reportId'
+    | '/admin/users/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/accept-invitation/$invitationId'
     | '/auth'
     | '/api/auth/$'
     | '/auth/create-account'
     | '/auth/sign-in'
+    | '/dashboard/organizations/new'
     | '/admin'
+    | '/admin/investors/verification'
+    | '/admin/reports/$reportId'
     | '/admin/users/$userId'
     | '/auth/admin/reset-password'
     | '/auth/admin/sign-in'
-    | '/admin/users'
+    | '/dashboard/organizations/$orgId/members'
+    | '/dashboard/organizations/$orgId/teams'
     | '/admin/reports'
-    | '/admin/reports/$reportId'
+    | '/admin/users'
   id:
     | '__root__'
     | '/'
+    | '/accept-invitation/$invitationId'
     | '/admin/_layout'
     | '/auth/_layout'
     | '/api/auth/$'
     | '/auth/_layout/create-account'
     | '/auth/_layout/sign-in'
+    | '/dashboard/organizations/new'
     | '/admin/_layout/'
+    | '/admin/_layout/investors/verification'
+    | '/admin/_layout/reports/$reportId'
     | '/admin/_layout/users/$userId'
     | '/auth/_layout/admin/reset-password'
     | '/auth/_layout/admin/sign-in'
-    | '/admin/_layout/users/'
+    | '/dashboard/organizations/$orgId/members'
+    | '/dashboard/organizations/$orgId/teams'
     | '/admin/_layout/reports/'
-    | '/admin/_layout/reports/$reportId'
+    | '/admin/_layout/users/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AcceptInvitationInvitationIdRoute: typeof AcceptInvitationInvitationIdRoute
   AdminLayoutRoute: typeof AdminLayoutRouteWithChildren
   AuthLayoutRoute: typeof AuthLayoutRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  DashboardOrganizationsNewRoute: typeof DashboardOrganizationsNewRoute
+  DashboardOrganizationsOrgIdMembersRoute: typeof DashboardOrganizationsOrgIdMembersRoute
+  DashboardOrganizationsOrgIdTeamsRoute: typeof DashboardOrganizationsOrgIdTeamsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -213,12 +282,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/accept-invitation/$invitationId': {
+      id: '/accept-invitation/$invitationId'
+      path: '/accept-invitation/$invitationId'
+      fullPath: '/accept-invitation/$invitationId'
+      preLoaderRoute: typeof AcceptInvitationInvitationIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/_layout/': {
       id: '/admin/_layout/'
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminLayoutIndexRouteImport
       parentRoute: typeof AdminLayoutRoute
+    }
+    '/dashboard/organizations/new': {
+      id: '/dashboard/organizations/new'
+      path: '/dashboard/organizations/new'
+      fullPath: '/dashboard/organizations/new'
+      preLoaderRoute: typeof DashboardOrganizationsNewRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/auth/_layout/sign-in': {
       id: '/auth/_layout/sign-in'
@@ -255,6 +338,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLayoutReportsIndexRouteImport
       parentRoute: typeof AdminLayoutRoute
     }
+    '/dashboard/organizations/$orgId/teams': {
+      id: '/dashboard/organizations/$orgId/teams'
+      path: '/dashboard/organizations/$orgId/teams'
+      fullPath: '/dashboard/organizations/$orgId/teams'
+      preLoaderRoute: typeof DashboardOrganizationsOrgIdTeamsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/organizations/$orgId/members': {
+      id: '/dashboard/organizations/$orgId/members'
+      path: '/dashboard/organizations/$orgId/members'
+      fullPath: '/dashboard/organizations/$orgId/members'
+      preLoaderRoute: typeof DashboardOrganizationsOrgIdMembersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/_layout/admin/sign-in': {
       id: '/auth/_layout/admin/sign-in'
       path: '/admin/sign-in'
@@ -283,23 +380,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLayoutReportsReportIdRouteImport
       parentRoute: typeof AdminLayoutRoute
     }
+    '/admin/_layout/investors/verification': {
+      id: '/admin/_layout/investors/verification'
+      path: '/investors/verification'
+      fullPath: '/admin/investors/verification'
+      preLoaderRoute: typeof AdminLayoutInvestorsVerificationRouteImport
+      parentRoute: typeof AdminLayoutRoute
+    }
   }
 }
 
 interface AdminLayoutRouteChildren {
   AdminLayoutIndexRoute: typeof AdminLayoutIndexRoute
-  AdminLayoutUsersUserIdRoute: typeof AdminLayoutUsersUserIdRoute
-  AdminLayoutUsersIndexRoute: typeof AdminLayoutUsersIndexRoute
-  AdminLayoutReportsIndexRoute: typeof AdminLayoutReportsIndexRoute
+  AdminLayoutInvestorsVerificationRoute: typeof AdminLayoutInvestorsVerificationRoute
   AdminLayoutReportsReportIdRoute: typeof AdminLayoutReportsReportIdRoute
+  AdminLayoutUsersUserIdRoute: typeof AdminLayoutUsersUserIdRoute
+  AdminLayoutReportsIndexRoute: typeof AdminLayoutReportsIndexRoute
+  AdminLayoutUsersIndexRoute: typeof AdminLayoutUsersIndexRoute
 }
 
 const AdminLayoutRouteChildren: AdminLayoutRouteChildren = {
   AdminLayoutIndexRoute: AdminLayoutIndexRoute,
-  AdminLayoutUsersUserIdRoute: AdminLayoutUsersUserIdRoute,
-  AdminLayoutUsersIndexRoute: AdminLayoutUsersIndexRoute,
-  AdminLayoutReportsIndexRoute: AdminLayoutReportsIndexRoute,
+  AdminLayoutInvestorsVerificationRoute: AdminLayoutInvestorsVerificationRoute,
   AdminLayoutReportsReportIdRoute: AdminLayoutReportsReportIdRoute,
+  AdminLayoutUsersUserIdRoute: AdminLayoutUsersUserIdRoute,
+  AdminLayoutReportsIndexRoute: AdminLayoutReportsIndexRoute,
+  AdminLayoutUsersIndexRoute: AdminLayoutUsersIndexRoute,
 }
 
 const AdminLayoutRouteWithChildren = AdminLayoutRoute._addFileChildren(
@@ -326,9 +432,14 @@ const AuthLayoutRouteWithChildren = AuthLayoutRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AcceptInvitationInvitationIdRoute: AcceptInvitationInvitationIdRoute,
   AdminLayoutRoute: AdminLayoutRouteWithChildren,
   AuthLayoutRoute: AuthLayoutRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  DashboardOrganizationsNewRoute: DashboardOrganizationsNewRoute,
+  DashboardOrganizationsOrgIdMembersRoute:
+    DashboardOrganizationsOrgIdMembersRoute,
+  DashboardOrganizationsOrgIdTeamsRoute: DashboardOrganizationsOrgIdTeamsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

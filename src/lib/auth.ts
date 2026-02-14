@@ -1,5 +1,5 @@
 import { betterAuth } from 'better-auth'
-import { admin } from 'better-auth/plugins'
+import { admin, organization } from 'better-auth/plugins'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
 
@@ -36,5 +36,34 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  plugins: [admin(), tanstackStartCookies()],
+  plugins: [
+    admin(),
+    organization({
+      teams: {
+        enabled: true,
+        maximumTeams: 20,
+      },
+      schema: {
+        organization: {
+          additionalFields: {
+            type: {
+              type: 'string',
+              input: true,
+              required: true,
+              defaultValue: 'startup',
+            },
+          },
+        },
+      },
+      sendInvitationEmail(data) {
+        console.log('Invitation email:', {
+          email: data.email,
+          inviter: data.inviter.user.name,
+          organization: data.organization.name,
+          inviteLink: `https://example.com/accept-invitation/${data.id}`,
+        })
+      },
+    }),
+    tanstackStartCookies(),
+  ],
 })
