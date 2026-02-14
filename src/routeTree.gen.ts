@@ -9,13 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as V2RouteImport } from './routes/v2'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthLayoutRouteImport } from './routes/auth/_layout'
 import { Route as AdminLayoutRouteImport } from './routes/admin/_layout'
 import { Route as AcceptInvitationInvitationIdRouteImport } from './routes/accept-invitation/$invitationId'
+import { Route as AuthLayoutIndexRouteImport } from './routes/auth/_layout/index'
 import { Route as AdminLayoutIndexRouteImport } from './routes/admin/_layout/index'
 import { Route as DashboardOrganizationsNewRouteImport } from './routes/dashboard/organizations/new'
 import { Route as AuthLayoutSignInRouteImport } from './routes/auth/_layout/sign-in'
+import { Route as AuthLayoutResetPasswordRouteImport } from './routes/auth/_layout/reset-password'
 import { Route as AuthLayoutCreateAccountRouteImport } from './routes/auth/_layout/create-account'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiAdminPermissionAuditRouteImport } from './routes/api/admin/permission-audit'
@@ -23,12 +26,15 @@ import { Route as AdminLayoutUsersIndexRouteImport } from './routes/admin/_layou
 import { Route as AdminLayoutReportsIndexRouteImport } from './routes/admin/_layout/reports/index'
 import { Route as DashboardOrganizationsOrgIdTeamsRouteImport } from './routes/dashboard/organizations/$orgId/teams'
 import { Route as DashboardOrganizationsOrgIdMembersRouteImport } from './routes/dashboard/organizations/$orgId/members'
-import { Route as AuthLayoutAdminSignInRouteImport } from './routes/auth/_layout/admin/sign-in'
-import { Route as AuthLayoutAdminResetPasswordRouteImport } from './routes/auth/_layout/admin/reset-password'
 import { Route as AdminLayoutUsersUserIdRouteImport } from './routes/admin/_layout/users/$userId'
 import { Route as AdminLayoutReportsReportIdRouteImport } from './routes/admin/_layout/reports/$reportId'
 import { Route as AdminLayoutInvestorsVerificationRouteImport } from './routes/admin/_layout/investors/verification'
 
+const V2Route = V2RouteImport.update({
+  id: '/v2',
+  path: '/v2',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -50,6 +56,11 @@ const AcceptInvitationInvitationIdRoute =
     path: '/accept-invitation/$invitationId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthLayoutIndexRoute = AuthLayoutIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthLayoutRoute,
+} as any)
 const AdminLayoutIndexRoute = AdminLayoutIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -64,6 +75,11 @@ const DashboardOrganizationsNewRoute =
 const AuthLayoutSignInRoute = AuthLayoutSignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
+  getParentRoute: () => AuthLayoutRoute,
+} as any)
+const AuthLayoutResetPasswordRoute = AuthLayoutResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => AuthLayoutRoute,
 } as any)
 const AuthLayoutCreateAccountRoute = AuthLayoutCreateAccountRouteImport.update({
@@ -103,17 +119,6 @@ const DashboardOrganizationsOrgIdMembersRoute =
     path: '/dashboard/organizations/$orgId/members',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AuthLayoutAdminSignInRoute = AuthLayoutAdminSignInRouteImport.update({
-  id: '/admin/sign-in',
-  path: '/admin/sign-in',
-  getParentRoute: () => AuthLayoutRoute,
-} as any)
-const AuthLayoutAdminResetPasswordRoute =
-  AuthLayoutAdminResetPasswordRouteImport.update({
-    id: '/admin/reset-password',
-    path: '/admin/reset-password',
-    getParentRoute: () => AuthLayoutRoute,
-  } as any)
 const AdminLayoutUsersUserIdRoute = AdminLayoutUsersUserIdRouteImport.update({
   id: '/users/$userId',
   path: '/users/$userId',
@@ -134,20 +139,21 @@ const AdminLayoutInvestorsVerificationRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/v2': typeof V2Route
   '/accept-invitation/$invitationId': typeof AcceptInvitationInvitationIdRoute
   '/admin': typeof AdminLayoutRouteWithChildren
   '/auth': typeof AuthLayoutRouteWithChildren
   '/api/admin/permission-audit': typeof ApiAdminPermissionAuditRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/auth/create-account': typeof AuthLayoutCreateAccountRoute
+  '/auth/reset-password': typeof AuthLayoutResetPasswordRoute
   '/auth/sign-in': typeof AuthLayoutSignInRoute
   '/dashboard/organizations/new': typeof DashboardOrganizationsNewRoute
   '/admin/': typeof AdminLayoutIndexRoute
+  '/auth/': typeof AuthLayoutIndexRoute
   '/admin/investors/verification': typeof AdminLayoutInvestorsVerificationRoute
   '/admin/reports/$reportId': typeof AdminLayoutReportsReportIdRoute
   '/admin/users/$userId': typeof AdminLayoutUsersUserIdRoute
-  '/auth/admin/reset-password': typeof AuthLayoutAdminResetPasswordRoute
-  '/auth/admin/sign-in': typeof AuthLayoutAdminSignInRoute
   '/dashboard/organizations/$orgId/members': typeof DashboardOrganizationsOrgIdMembersRoute
   '/dashboard/organizations/$orgId/teams': typeof DashboardOrganizationsOrgIdTeamsRoute
   '/admin/reports/': typeof AdminLayoutReportsIndexRoute
@@ -155,19 +161,19 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/v2': typeof V2Route
   '/accept-invitation/$invitationId': typeof AcceptInvitationInvitationIdRoute
-  '/auth': typeof AuthLayoutRouteWithChildren
   '/api/admin/permission-audit': typeof ApiAdminPermissionAuditRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/auth/create-account': typeof AuthLayoutCreateAccountRoute
+  '/auth/reset-password': typeof AuthLayoutResetPasswordRoute
   '/auth/sign-in': typeof AuthLayoutSignInRoute
   '/dashboard/organizations/new': typeof DashboardOrganizationsNewRoute
   '/admin': typeof AdminLayoutIndexRoute
+  '/auth': typeof AuthLayoutIndexRoute
   '/admin/investors/verification': typeof AdminLayoutInvestorsVerificationRoute
   '/admin/reports/$reportId': typeof AdminLayoutReportsReportIdRoute
   '/admin/users/$userId': typeof AdminLayoutUsersUserIdRoute
-  '/auth/admin/reset-password': typeof AuthLayoutAdminResetPasswordRoute
-  '/auth/admin/sign-in': typeof AuthLayoutAdminSignInRoute
   '/dashboard/organizations/$orgId/members': typeof DashboardOrganizationsOrgIdMembersRoute
   '/dashboard/organizations/$orgId/teams': typeof DashboardOrganizationsOrgIdTeamsRoute
   '/admin/reports': typeof AdminLayoutReportsIndexRoute
@@ -176,20 +182,21 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/v2': typeof V2Route
   '/accept-invitation/$invitationId': typeof AcceptInvitationInvitationIdRoute
   '/admin/_layout': typeof AdminLayoutRouteWithChildren
   '/auth/_layout': typeof AuthLayoutRouteWithChildren
   '/api/admin/permission-audit': typeof ApiAdminPermissionAuditRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/auth/_layout/create-account': typeof AuthLayoutCreateAccountRoute
+  '/auth/_layout/reset-password': typeof AuthLayoutResetPasswordRoute
   '/auth/_layout/sign-in': typeof AuthLayoutSignInRoute
   '/dashboard/organizations/new': typeof DashboardOrganizationsNewRoute
   '/admin/_layout/': typeof AdminLayoutIndexRoute
+  '/auth/_layout/': typeof AuthLayoutIndexRoute
   '/admin/_layout/investors/verification': typeof AdminLayoutInvestorsVerificationRoute
   '/admin/_layout/reports/$reportId': typeof AdminLayoutReportsReportIdRoute
   '/admin/_layout/users/$userId': typeof AdminLayoutUsersUserIdRoute
-  '/auth/_layout/admin/reset-password': typeof AuthLayoutAdminResetPasswordRoute
-  '/auth/_layout/admin/sign-in': typeof AuthLayoutAdminSignInRoute
   '/dashboard/organizations/$orgId/members': typeof DashboardOrganizationsOrgIdMembersRoute
   '/dashboard/organizations/$orgId/teams': typeof DashboardOrganizationsOrgIdTeamsRoute
   '/admin/_layout/reports/': typeof AdminLayoutReportsIndexRoute
@@ -199,20 +206,21 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/v2'
     | '/accept-invitation/$invitationId'
     | '/admin'
     | '/auth'
     | '/api/admin/permission-audit'
     | '/api/auth/$'
     | '/auth/create-account'
+    | '/auth/reset-password'
     | '/auth/sign-in'
     | '/dashboard/organizations/new'
     | '/admin/'
+    | '/auth/'
     | '/admin/investors/verification'
     | '/admin/reports/$reportId'
     | '/admin/users/$userId'
-    | '/auth/admin/reset-password'
-    | '/auth/admin/sign-in'
     | '/dashboard/organizations/$orgId/members'
     | '/dashboard/organizations/$orgId/teams'
     | '/admin/reports/'
@@ -220,19 +228,19 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/v2'
     | '/accept-invitation/$invitationId'
-    | '/auth'
     | '/api/admin/permission-audit'
     | '/api/auth/$'
     | '/auth/create-account'
+    | '/auth/reset-password'
     | '/auth/sign-in'
     | '/dashboard/organizations/new'
     | '/admin'
+    | '/auth'
     | '/admin/investors/verification'
     | '/admin/reports/$reportId'
     | '/admin/users/$userId'
-    | '/auth/admin/reset-password'
-    | '/auth/admin/sign-in'
     | '/dashboard/organizations/$orgId/members'
     | '/dashboard/organizations/$orgId/teams'
     | '/admin/reports'
@@ -240,20 +248,21 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/v2'
     | '/accept-invitation/$invitationId'
     | '/admin/_layout'
     | '/auth/_layout'
     | '/api/admin/permission-audit'
     | '/api/auth/$'
     | '/auth/_layout/create-account'
+    | '/auth/_layout/reset-password'
     | '/auth/_layout/sign-in'
     | '/dashboard/organizations/new'
     | '/admin/_layout/'
+    | '/auth/_layout/'
     | '/admin/_layout/investors/verification'
     | '/admin/_layout/reports/$reportId'
     | '/admin/_layout/users/$userId'
-    | '/auth/_layout/admin/reset-password'
-    | '/auth/_layout/admin/sign-in'
     | '/dashboard/organizations/$orgId/members'
     | '/dashboard/organizations/$orgId/teams'
     | '/admin/_layout/reports/'
@@ -262,6 +271,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  V2Route: typeof V2Route
   AcceptInvitationInvitationIdRoute: typeof AcceptInvitationInvitationIdRoute
   AdminLayoutRoute: typeof AdminLayoutRouteWithChildren
   AuthLayoutRoute: typeof AuthLayoutRouteWithChildren
@@ -274,6 +284,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/v2': {
+      id: '/v2'
+      path: '/v2'
+      fullPath: '/v2'
+      preLoaderRoute: typeof V2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -302,6 +319,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AcceptInvitationInvitationIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/_layout/': {
+      id: '/auth/_layout/'
+      path: '/'
+      fullPath: '/auth/'
+      preLoaderRoute: typeof AuthLayoutIndexRouteImport
+      parentRoute: typeof AuthLayoutRoute
+    }
     '/admin/_layout/': {
       id: '/admin/_layout/'
       path: '/'
@@ -321,6 +345,13 @@ declare module '@tanstack/react-router' {
       path: '/sign-in'
       fullPath: '/auth/sign-in'
       preLoaderRoute: typeof AuthLayoutSignInRouteImport
+      parentRoute: typeof AuthLayoutRoute
+    }
+    '/auth/_layout/reset-password': {
+      id: '/auth/_layout/reset-password'
+      path: '/reset-password'
+      fullPath: '/auth/reset-password'
+      preLoaderRoute: typeof AuthLayoutResetPasswordRouteImport
       parentRoute: typeof AuthLayoutRoute
     }
     '/auth/_layout/create-account': {
@@ -372,20 +403,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardOrganizationsOrgIdMembersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/_layout/admin/sign-in': {
-      id: '/auth/_layout/admin/sign-in'
-      path: '/admin/sign-in'
-      fullPath: '/auth/admin/sign-in'
-      preLoaderRoute: typeof AuthLayoutAdminSignInRouteImport
-      parentRoute: typeof AuthLayoutRoute
-    }
-    '/auth/_layout/admin/reset-password': {
-      id: '/auth/_layout/admin/reset-password'
-      path: '/admin/reset-password'
-      fullPath: '/auth/admin/reset-password'
-      preLoaderRoute: typeof AuthLayoutAdminResetPasswordRouteImport
-      parentRoute: typeof AuthLayoutRoute
-    }
     '/admin/_layout/users/$userId': {
       id: '/admin/_layout/users/$userId'
       path: '/users/$userId'
@@ -434,16 +451,16 @@ const AdminLayoutRouteWithChildren = AdminLayoutRoute._addFileChildren(
 
 interface AuthLayoutRouteChildren {
   AuthLayoutCreateAccountRoute: typeof AuthLayoutCreateAccountRoute
+  AuthLayoutResetPasswordRoute: typeof AuthLayoutResetPasswordRoute
   AuthLayoutSignInRoute: typeof AuthLayoutSignInRoute
-  AuthLayoutAdminResetPasswordRoute: typeof AuthLayoutAdminResetPasswordRoute
-  AuthLayoutAdminSignInRoute: typeof AuthLayoutAdminSignInRoute
+  AuthLayoutIndexRoute: typeof AuthLayoutIndexRoute
 }
 
 const AuthLayoutRouteChildren: AuthLayoutRouteChildren = {
   AuthLayoutCreateAccountRoute: AuthLayoutCreateAccountRoute,
+  AuthLayoutResetPasswordRoute: AuthLayoutResetPasswordRoute,
   AuthLayoutSignInRoute: AuthLayoutSignInRoute,
-  AuthLayoutAdminResetPasswordRoute: AuthLayoutAdminResetPasswordRoute,
-  AuthLayoutAdminSignInRoute: AuthLayoutAdminSignInRoute,
+  AuthLayoutIndexRoute: AuthLayoutIndexRoute,
 }
 
 const AuthLayoutRouteWithChildren = AuthLayoutRoute._addFileChildren(
@@ -452,6 +469,7 @@ const AuthLayoutRouteWithChildren = AuthLayoutRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  V2Route: V2Route,
   AcceptInvitationInvitationIdRoute: AcceptInvitationInvitationIdRoute,
   AdminLayoutRoute: AdminLayoutRouteWithChildren,
   AuthLayoutRoute: AuthLayoutRouteWithChildren,

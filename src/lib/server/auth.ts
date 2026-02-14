@@ -1,34 +1,23 @@
-import { cookies, createServerFn } from '@tanstack/react-start/server'
+import { createServerFn } from '@tanstack/react-start'
+import { getRequestHeaders } from '@tanstack/react-start/server'
 
 import { auth } from '@/lib/auth'
-
-const COOKIE_NAME = 'better-auth.session_token'
+import { RBACService } from '@/lib/server/rbac'
 
 export const signIn = createServerFn({
   method: 'POST',
 })
-  .validator((data: { email: string; password: string }) => data)
+  .inputValidator((data: { email: string; password: string }) => data)
   .handler(async ({ data }) => {
+    const headers = getRequestHeaders()
+
     const session = await auth.api.signInEmail({
+      headers,
       body: {
         email: data.email,
         password: data.password,
       },
     })
-
-    const cookieHeader = session.headers.get('set-cookie')
-    if (cookieHeader) {
-      const [cookie] = cookieHeader.split(';')
-      const [name, value] = cookie.split('=')
-
-      cookies().set(name, value, {
-        path: '/',
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 60 * 60 * 24 * 7,
-      })
-    }
 
     return { session }
   })
@@ -36,9 +25,14 @@ export const signIn = createServerFn({
 export const signUp = createServerFn({
   method: 'POST',
 })
-  .validator((data: { email: string; password: string; name: string }) => data)
+  .inputValidator(
+    (data: { email: string; password: string; name: string }) => data,
+  )
   .handler(async ({ data }) => {
-    const session = await auth.api.signUp({
+    const headers = getRequestHeaders()
+
+    const session = await auth.api.signUpEmail({
+      headers,
       body: {
         email: data.email,
         password: data.password,
@@ -46,61 +40,41 @@ export const signUp = createServerFn({
       },
     })
 
-    const cookieHeader = session.headers.get('set-cookie')
-    if (cookieHeader) {
-      const [cookie] = cookieHeader.split(';')
-      const [name, value] = cookie.split('=')
-
-      cookies().set(name, value, {
-        path: '/',
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 60 * 60 * 24 * 7,
-      })
-    }
-
     return { session }
   })
 
 export const signOut = createServerFn({
   method: 'POST',
-}).handler(async ({ request }) => {
-  const cookieHeader = request.headers.get('cookie')
-  const sessionToken = cookieHeader?.match(
-    /better-auth\.session_token=([^;]+)/,
-  )?.[1]
+}).handler(async () => {
+  const headers = getRequestHeaders()
 
-  if (sessionToken) {
-    await auth.api.signOut({
-      headers: {
-        cookie: `better-auth.session_token=${sessionToken}`,
-      },
-    })
-  }
-
-  cookies().delete(COOKIE_NAME)
+  await auth.api.signOut({ headers })
 
   return { success: true }
 })
 
 export const getSession = createServerFn({
   method: 'GET',
-}).handler(async ({ request }) => {
-  const cookieHeader = request.headers.get('cookie')
-  const sessionToken = cookieHeader?.match(
-    /better-auth\.session_token=([^;]+)/,
-  )?.[1]
+}).handler(async () => {
+  const headers = getRequestHeaders()
 
-  if (!sessionToken) {
-    return { session: null }
+  const session = await auth.api.getSession({ headers })
+
+  return { session: session ?? null }
+})
+
+export const getSessionWithRole = createServerFn({
+  method: 'GET',
+}).handler(async () => {
+  const headers = getRequestHeaders()
+
+  const session = await auth.api.getSession({ headers })
+
+  if (!session) {
+    return { session: null, isAdmin: false }
   }
 
-  const session = await auth.api.getSession({
-    headers: {
-      cookie: `better-auth.session_token=${sessionToken}`,
-    },
-  })
+  const isAdmin = await RBACService.isAdmin(session.user.id)
 
-  return { session }
+  return { session, isAdmin }
 })
