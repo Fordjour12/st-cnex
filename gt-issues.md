@@ -477,7 +477,7 @@ Create detailed verification review interface with document viewer and approval 
 - [x] Create verification review modal component
 - [x] Display investor profile: Name, Email, Type, Investment Range, Industries
 - [x] Show uploaded verification documents with preview
-- [ ] Add document viewer (PDF.js for PDFs, image viewer for images)
+- [x] Add document viewer (PDF.js for PDFs, image viewer for images)
 - [x] Display LinkedIn profile (embedded or link)
 - [x] Show portfolio companies/investments
 - [x] Add approval form: Approve with optional notes
@@ -513,13 +513,13 @@ Implement credibility scoring system for investors based on profile completeness
 
 **Acceptance Criteria:**
 
-- [ ] Create credibility score algorithm (0-100)
-- [ ] Factors: Verified (+50), LinkedIn profile (+15), Portfolio (+15), Complete profile (+10), Active user (+10)
-- [ ] Display credibility score on investor profiles
-- [ ] Add filter in investor list by credibility score
-- [ ] Show credibility badge (gold/silver/bronze) on high scores
-- [ ] Auto-flag low credibility investors (<30) for review
-- [ ] Update score on profile changes
+- [x] Create credibility score algorithm (0-100)
+- [x] Factors: Verified (+50), LinkedIn profile (+15), Portfolio (+15), Complete profile (+10), Active user (+10)
+- [x] Display credibility score on investor profiles
+- [x] Add filter in investor list by credibility score
+- [x] Show credibility badge (gold/silver/bronze) on high scores
+- [x] Auto-flag low credibility investors (<30) for review
+- [x] Update score on profile changes
 
 **Scoring Breakdown:**
 
@@ -1156,10 +1156,11 @@ Would you like me to:
 - ✅ Issue #9: Reports Dashboard (filters, search, pagination)
 - ✅ Issue #10: Report Detail & Review (resolve/dismiss actions)
 
-### Phase 4: Investor Verification
+### Phase 4: Investor Verification (COMPLETE)
 
-- ✅ Issue #13: Investor Verification Queue (table + approve/reject)
-- ✅ Issue #14: Verification Review (inline in queue page)
+- ✅ Issue #13: Investor Verification Queue (table + filters + approve/reject + pagination + sidebar badge)
+- ✅ Issue #14: Verification Review (inline in queue page + audit logging)
+- ✅ Issue #15: Investor Credibility Scoring (score algorithm, badges, low credibility flagging)
 
 ### Phase 5: Analytics
 
@@ -1172,3 +1173,4 @@ Would you like me to:
 - `src/lib/server/admin/investors.ts` - Investor verification
 - `src/lib/server/admin/reports.ts` - Reports management
 - `src/lib/server/analytics.ts` - Analytics service
+- `src/lib/server/credibility.ts` - Investor credibility scoring

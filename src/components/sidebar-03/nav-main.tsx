@@ -23,6 +23,7 @@ export type Route = {
   title: string
   icon?: React.ReactNode
   link: string
+  badge?: number
   subs?: {
     title: string
     link: string
@@ -68,6 +69,11 @@ export default function DashboardNavigation({ routes }: { routes: Route[] }) {
                   {!isCollapsed && (
                     <span className="ml-2 flex-1 text-sm font-medium">
                       {route.title}
+                    </span>
+                  )}
+                  {!isCollapsed && route.badge && route.badge > 0 && (
+                    <span className="ml-auto mr-2 flex min-w-[1.25rem] items-center justify-center rounded-full bg-destructive px-1 text-xs text-destructive-foreground">
+                      {route.badge > 99 ? '99+' : route.badge}
                     </span>
                   )}
                   {!isCollapsed && hasSubRoutes && (

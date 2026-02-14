@@ -152,4 +152,22 @@ export class AnalyticsService {
 
     return result?.count ?? 0
   }
+
+  static async getPendingVerifications(): Promise<number> {
+    const [result] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(investorProfiles)
+      .where(eq(investorProfiles.verificationStatus, 'pending'))
+
+    return result?.count ?? 0
+  }
+
+  static async getPendingReports(): Promise<number> {
+    const [result] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(reports)
+      .where(eq(reports.status, 'pending'))
+
+    return result?.count ?? 0
+  }
 }
