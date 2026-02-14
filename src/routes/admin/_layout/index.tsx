@@ -1,5 +1,4 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { getRequestHeaders } from '@tanstack/react-start/server'
 import { useState } from 'react'
 import {
   CartesianGrid,
@@ -19,7 +18,6 @@ import {
 } from '@/components/ui/chart'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { auth } from '@/lib/auth'
 import {
   exportAdminAnalyticsCsv,
   getAdminAnalyticsDashboard,
@@ -29,6 +27,8 @@ import {
   createAnnouncement,
   createFraudFlag,
   evaluateModerationRules,
+  getAdminModerationOverview,
+  getAdminSystemOverview,
   initializePhase4Defaults,
   issueUserWarning,
   resolveFraudFlag,
@@ -36,24 +36,13 @@ import {
   upsertFeatureToggle,
   upsertSystemSetting,
 } from '@/lib/server/admin/moderation-and-system'
-import {
-  Phase4ModerationService,
-  Phase4SystemService,
-} from '@/lib/server/moderation-and-system'
 
 export const Route = createFileRoute('/admin/_layout/')({
   loader: async () => {
-    const headers = getRequestHeaders()
-    const session = await auth.api.getSession({ headers })
-
-    if (!session) {
-      throw new Error('Unauthorized')
-    }
-
     const [analytics, moderation, system] = await Promise.all([
       getAdminAnalyticsDashboard({ data: { days: 30 } }),
-      Phase4ModerationService.getModerationOverview(),
-      Phase4SystemService.getSystemOverview(),
+      getAdminModerationOverview(),
+      getAdminSystemOverview(),
     ])
 
     return {
@@ -67,8 +56,8 @@ export const Route = createFileRoute('/admin/_layout/')({
 
 interface LoaderData {
   analytics: Awaited<ReturnType<typeof getAdminAnalyticsDashboard>>
-  moderation: Awaited<ReturnType<typeof Phase4ModerationService.getModerationOverview>>
-  system: Awaited<ReturnType<typeof Phase4SystemService.getSystemOverview>>
+  moderation: Awaited<ReturnType<typeof getAdminModerationOverview>>
+  system: Awaited<ReturnType<typeof getAdminSystemOverview>>
 }
 
 const growthChartConfig = {

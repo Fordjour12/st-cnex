@@ -8,12 +8,6 @@ import {
   useReactTable,
   type ColumnDef,
 } from '@tanstack/react-table'
-import { db } from '@/db'
-import { investorProfiles } from '@/db/schema/profile'
-import { user } from '@/db/schema/auth'
-import { eq, desc, and, gte, lte } from 'drizzle-orm'
-import { auth } from '@/lib/auth'
-import { getRequestHeaders } from '@tanstack/react-start/server'
 import {
   Table,
   TableBody,
@@ -24,9 +18,10 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { verifyInvestor } from '@/lib/server/admin/investors'
-import { RBACService } from '@/lib/server/rbac'
-import { PERMISSIONS } from '@/lib/permissions'
+import {
+  listInvestorVerifications,
+  verifyInvestor,
+} from '@/lib/server/admin/investors'
 
 const searchSchema = z.object({
   page: z.number().optional().default(1),
@@ -44,78 +39,7 @@ export const Route = createFileRoute('/admin/_layout/investors/verification')({
   validateSearch: (search) => searchSchema.parse(search),
   loaderDeps: ({ search }) => search,
   loader: async ({ deps }) => {
-    const headers = getRequestHeaders()
-    const session = await auth.api.getSession({ headers })
-
-    if (!session) {
-      throw new Error('Unauthorized')
-    }
-
-    const canVerify = await RBACService.hasPermission(
-      session.user.id,
-      PERMISSIONS.INVESTORS_VERIFY,
-    )
-
-    if (!canVerify) {
-      throw new Error('Forbidden')
-    }
-
-    const conditions = []
-
-    if (deps.status && deps.status !== 'all') {
-      conditions.push(eq(investorProfiles.verificationStatus, deps.status))
-    }
-
-    if (deps.investorType) {
-      conditions.push(eq(investorProfiles.investorType, deps.investorType))
-    }
-
-    if (deps.dateFrom) {
-      conditions.push(gte(investorProfiles.createdAt, new Date(deps.dateFrom)))
-    }
-
-    if (deps.dateTo) {
-      conditions.push(lte(investorProfiles.createdAt, new Date(deps.dateTo)))
-    }
-
-    const offset = ((deps.page ?? 1) - 1) * (deps.limit ?? 20)
-
-    const [investors, countResult] = await Promise.all([
-      db
-        .select({
-          userId: investorProfiles.userId,
-          investorType: investorProfiles.investorType,
-          investmentRangeMin: investorProfiles.investmentRangeMin,
-          investmentRangeMax: investorProfiles.investmentRangeMax,
-          industriesOfInterest: investorProfiles.industriesOfInterest,
-          verificationStatus: investorProfiles.verificationStatus,
-          linkedinUrl: investorProfiles.linkedinUrl,
-          portfolioUrl: investorProfiles.portfolio,
-          createdAt: investorProfiles.createdAt,
-          email: user.email,
-          name: user.name,
-        })
-        .from(investorProfiles)
-        .innerJoin(user, eq(investorProfiles.userId, user.id))
-        .where(and(...conditions))
-        .orderBy(desc(investorProfiles.createdAt))
-        .limit(deps.limit ?? 20)
-        .offset(offset),
-      db
-        .select({ count: investorProfiles.userId })
-        .from(investorProfiles)
-        .where(and(...conditions)),
-    ])
-
-    return {
-      investors,
-      pagination: {
-        page: deps.page ?? 1,
-        limit: deps.limit ?? 20,
-        total: countResult.length,
-        totalPages: Math.ceil(countResult.length / (deps.limit ?? 20)),
-      },
-    }
+    return listInvestorVerifications({ data: deps })
   },
   component: InvestorVerificationPage,
 })

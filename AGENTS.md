@@ -95,6 +95,22 @@ pnpm db:studio       # Open DB studio UI
 - Export components as named exports
 - Co-locate tests with components when possible
 
+### Server File Organization
+
+- For larger features, separate server code by responsibility:
+
+```text
+src/utils/
+├── users.functions.ts   # createServerFn wrappers, safe to import in routes/components
+├── users.server.ts      # server-only helpers (DB queries/internal logic)
+└── schemas.ts           # shared client-safe schemas/types/constants
+```
+
+- `*.functions.ts`: export `createServerFn` wrappers only; this file is the public entrypoint for server actions.
+- `*.server.ts`: keep server-only implementation details; import this only from server function handlers or server-only modules.
+- `*.ts` (no suffix): keep client-safe code only (types, validation schemas, constants, pure utilities).
+- Avoid importing `*.server.ts` directly from route components or other client-reachable modules.
+
 ## Testing (Vitest)
 
 - Tests use Vitest with React Testing Library

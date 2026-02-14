@@ -18,6 +18,7 @@ import { Route as DashboardOrganizationsNewRouteImport } from './routes/dashboar
 import { Route as AuthLayoutSignInRouteImport } from './routes/auth/_layout/sign-in'
 import { Route as AuthLayoutCreateAccountRouteImport } from './routes/auth/_layout/create-account'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiAdminPermissionAuditRouteImport } from './routes/api/admin/permission-audit'
 import { Route as AdminLayoutUsersIndexRouteImport } from './routes/admin/_layout/users/index'
 import { Route as AdminLayoutReportsIndexRouteImport } from './routes/admin/_layout/reports/index'
 import { Route as DashboardOrganizationsOrgIdTeamsRouteImport } from './routes/dashboard/organizations/$orgId/teams'
@@ -73,6 +74,11 @@ const AuthLayoutCreateAccountRoute = AuthLayoutCreateAccountRouteImport.update({
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminPermissionAuditRoute = ApiAdminPermissionAuditRouteImport.update({
+  id: '/api/admin/permission-audit',
+  path: '/api/admin/permission-audit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLayoutUsersIndexRoute = AdminLayoutUsersIndexRouteImport.update({
@@ -131,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/accept-invitation/$invitationId': typeof AcceptInvitationInvitationIdRoute
   '/admin': typeof AdminLayoutRouteWithChildren
   '/auth': typeof AuthLayoutRouteWithChildren
+  '/api/admin/permission-audit': typeof ApiAdminPermissionAuditRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/auth/create-account': typeof AuthLayoutCreateAccountRoute
   '/auth/sign-in': typeof AuthLayoutSignInRoute
@@ -150,6 +157,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/accept-invitation/$invitationId': typeof AcceptInvitationInvitationIdRoute
   '/auth': typeof AuthLayoutRouteWithChildren
+  '/api/admin/permission-audit': typeof ApiAdminPermissionAuditRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/auth/create-account': typeof AuthLayoutCreateAccountRoute
   '/auth/sign-in': typeof AuthLayoutSignInRoute
@@ -171,6 +179,7 @@ export interface FileRoutesById {
   '/accept-invitation/$invitationId': typeof AcceptInvitationInvitationIdRoute
   '/admin/_layout': typeof AdminLayoutRouteWithChildren
   '/auth/_layout': typeof AuthLayoutRouteWithChildren
+  '/api/admin/permission-audit': typeof ApiAdminPermissionAuditRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/auth/_layout/create-account': typeof AuthLayoutCreateAccountRoute
   '/auth/_layout/sign-in': typeof AuthLayoutSignInRoute
@@ -193,6 +202,7 @@ export interface FileRouteTypes {
     | '/accept-invitation/$invitationId'
     | '/admin'
     | '/auth'
+    | '/api/admin/permission-audit'
     | '/api/auth/$'
     | '/auth/create-account'
     | '/auth/sign-in'
@@ -212,6 +222,7 @@ export interface FileRouteTypes {
     | '/'
     | '/accept-invitation/$invitationId'
     | '/auth'
+    | '/api/admin/permission-audit'
     | '/api/auth/$'
     | '/auth/create-account'
     | '/auth/sign-in'
@@ -232,6 +243,7 @@ export interface FileRouteTypes {
     | '/accept-invitation/$invitationId'
     | '/admin/_layout'
     | '/auth/_layout'
+    | '/api/admin/permission-audit'
     | '/api/auth/$'
     | '/auth/_layout/create-account'
     | '/auth/_layout/sign-in'
@@ -253,6 +265,7 @@ export interface RootRouteChildren {
   AcceptInvitationInvitationIdRoute: typeof AcceptInvitationInvitationIdRoute
   AdminLayoutRoute: typeof AdminLayoutRouteWithChildren
   AuthLayoutRoute: typeof AuthLayoutRouteWithChildren
+  ApiAdminPermissionAuditRoute: typeof ApiAdminPermissionAuditRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   DashboardOrganizationsNewRoute: typeof DashboardOrganizationsNewRoute
   DashboardOrganizationsOrgIdMembersRoute: typeof DashboardOrganizationsOrgIdMembersRoute
@@ -322,6 +335,13 @@ declare module '@tanstack/react-router' {
       path: '/api/auth/$'
       fullPath: '/api/auth/$'
       preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/permission-audit': {
+      id: '/api/admin/permission-audit'
+      path: '/api/admin/permission-audit'
+      fullPath: '/api/admin/permission-audit'
+      preLoaderRoute: typeof ApiAdminPermissionAuditRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/_layout/users/': {
@@ -435,6 +455,7 @@ const rootRouteChildren: RootRouteChildren = {
   AcceptInvitationInvitationIdRoute: AcceptInvitationInvitationIdRoute,
   AdminLayoutRoute: AdminLayoutRouteWithChildren,
   AuthLayoutRoute: AuthLayoutRouteWithChildren,
+  ApiAdminPermissionAuditRoute: ApiAdminPermissionAuditRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   DashboardOrganizationsNewRoute: DashboardOrganizationsNewRoute,
   DashboardOrganizationsOrgIdMembersRoute:

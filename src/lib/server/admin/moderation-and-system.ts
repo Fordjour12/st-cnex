@@ -5,7 +5,7 @@ import { PERMISSIONS } from '@/lib/permissions'
 import { requireAdminPermission } from '@/lib/server/admin/security'
 import { Phase4ModerationService, Phase4SystemService } from '@/lib/server/moderation-and-system'
 
-export const getPhase4ModerationOverview = createServerFn({ method: 'GET' }).handler(async () => {
+export const getAdminModerationOverview = createServerFn({ method: 'GET' }).handler(async () => {
   await requireAdminPermission(PERMISSIONS.REPORTS_REVIEW)
   return Phase4ModerationService.getModerationOverview()
 })
@@ -91,7 +91,7 @@ export const resolveFraudFlag = createServerFn({ method: 'POST' })
     })
   })
 
-export const getPhase4SystemOverview = createServerFn({ method: 'GET' }).handler(async () => {
+export const getAdminSystemOverview = createServerFn({ method: 'GET' }).handler(async () => {
   await requireAdminPermission(PERMISSIONS.SYSTEM_SETTINGS)
   return Phase4SystemService.getSystemOverview()
 })
