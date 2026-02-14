@@ -3,8 +3,9 @@ import { auth } from '@/lib/auth'
 import { getRequestHeaders } from '@tanstack/react-start/server'
 import { RBACService } from '@/lib/server/rbac'
 
-export const Route = createFileRoute('/admin/_layout')({
-  loader: async () => {
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+import { DashboardSidebar } from '@/components/sidebar-03/app-sidebar'
+{/*loader: async () => {
     const headers = getRequestHeaders()
     const session = await auth.api.getSession({ headers })
 
@@ -19,39 +20,19 @@ export const Route = createFileRoute('/admin/_layout')({
     }
 
     return { user: session.user }
-  },
+  },*/
+
+export const Route = createFileRoute('/admin/_layout')({
   component: AdminLayout,
 })
 
 function AdminLayout() {
   return (
-    <div className="flex min-h-screen">
-      <aside className="w-64 bg-gray-900 text-white p-4">
-        <h1 className="text-xl font-bold mb-6">Admin Dashboard</h1>
-        <nav className="space-y-2">
-          <a
-            href="/admin"
-            className="block py-2 px-4 rounded hover:bg-gray-800"
-          >
-            Overview
-          </a>
-          <a
-            href="/admin/users"
-            className="block py-2 px-4 rounded hover:bg-gray-800"
-          >
-            Users
-          </a>
-          <a
-            href="/admin/reports"
-            className="block py-2 px-4 rounded hover:bg-gray-800"
-          >
-            Reports
-          </a>
-        </nav>
-      </aside>
-      <main className="flex-1 p-8 bg-gray-50">
-        <Outlet />
-      </main>
-    </div>
+    <SidebarProvider>
+      <div className="relative flex h-dvh w-full">
+        <DashboardSidebar />
+        <SidebarInset className="flex flex-col" />
+      </div>
+    </SidebarProvider>
   )
 }

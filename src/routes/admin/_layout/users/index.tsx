@@ -20,7 +20,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 
-export const Route = createFileRoute('/admin/users')({
+export const Route = createFileRoute('/admin/_layout/users/')({
   loader: async () => {
     const headers = getRequestHeaders()
     const session = await auth.api.getSession({ headers })
@@ -102,10 +102,13 @@ function AdminUsersPage() {
       {
         id: 'actions',
         header: 'Actions',
-        cell: () => (
-          <span className="text-sm text-muted-foreground">
-            View (coming soon)
-          </span>
+        cell: ({ row }) => (
+          <a
+            href={`/admin/users/${row.original.id}`}
+            className="text-sm text-blue-600 hover:underline"
+          >
+            View
+          </a>
         ),
       },
     ],
