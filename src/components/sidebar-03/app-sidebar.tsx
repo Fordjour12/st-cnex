@@ -1,20 +1,10 @@
 "use client";
 
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarTrigger,
-  useSidebar,
-} from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
-import {
   Activity,
   DollarSign,
   Home,
-  Infinity,
+  Infinity as InfinityIcon,
   LinkIcon,
   Package2,
   Percent,
@@ -26,11 +16,22 @@ import {
   TrendingUp,
   Users,
 } from "lucide-react";
-import { Logo } from "@/components/sidebar-03/logo";
+import { motion } from "framer-motion";
 import type { Route } from "./nav-main";
+
+import { Logo } from "@/components/sidebar-03/logo";
 import DashboardNavigation from "@/components/sidebar-03/nav-main";
 import { NotificationsPopover } from "@/components/sidebar-03/nav-notifications";
 import { TeamSwitcher } from "@/components/sidebar-03/team-switcher";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarTrigger,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 
 const sampleNotifications = [
   {
@@ -56,12 +57,12 @@ const sampleNotifications = [
   },
 ];
 
-const dashboardRoutes: Route[] = [
+const dashboardRoutes: Array<Route> = [
   {
     id: "home",
     title: "Home",
     icon: <Home className="size-4" />,
-    link: "#",
+    link: "/admin",
   },
   {
     id: "products",
@@ -112,9 +113,15 @@ const dashboardRoutes: Route[] = [
   },
   {
     id: "customers",
-    title: "Customers",
+    title: "Users",
     icon: <Users className="size-4" />,
-    link: "#",
+    link: "/admin/users",
+  },
+  {
+    id: "reports",
+    title: "Reports",
+    icon: <Activity className="size-4" />,
+    link: "/admin/reports",
   },
   {
     id: "sales",
@@ -130,7 +137,7 @@ const dashboardRoutes: Route[] = [
       {
         title: "Subscriptions",
         link: "#",
-        icon: <Infinity className="size-4" />,
+        icon: <InfinityIcon className="size-4" />,
       },
     ],
   },

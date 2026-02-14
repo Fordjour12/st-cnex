@@ -1,29 +1,9 @@
 import { createServerFn } from '@tanstack/react-start'
-import { getRequestHeaders } from '@tanstack/react-start/server'
 import { z } from 'zod'
 
-import type { Permission } from '@/lib/permissions'
-import { auth } from '@/lib/auth'
 import { PERMISSIONS } from '@/lib/permissions'
-import { RBACService } from '@/lib/server/rbac'
+import { requireAdminPermission } from '@/lib/server/admin/security'
 import { UserService } from '@/lib/server/user'
-
-async function getSessionUser() {
-  const headers = getRequestHeaders()
-  const session = await auth.api.getSession({ headers })
-  if (!session) {
-    throw new Error('UNAUTHORIZED')
-  }
-  return session.user
-}
-
-async function assertPermission(userId: string, permission: Permission) {
-  const hasPermission = await RBACService.hasPermission(userId, permission)
-
-  if (!hasPermission) {
-    throw new Error('FORBIDDEN')
-  }
-}
 
 const getUsersSchema = z.object({
   page: z.number().optional().default(1),
@@ -36,8 +16,7 @@ const getUsersSchema = z.object({
 export const getAdminUsers = createServerFn({ method: 'GET' })
   .inputValidator(getUsersSchema)
   .handler(async ({ data }) => {
-    const sessionUser = await getSessionUser()
-    await assertPermission(sessionUser.id, PERMISSIONS.USERS_VIEW)
+    await requireAdminPermission(PERMISSIONS.USERS_VIEW)
 
     return UserService.getUsers(data)
   })
@@ -49,8 +28,7 @@ const getUserByIdSchema = z.object({
 export const getAdminUserById = createServerFn({ method: 'GET' })
   .inputValidator(getUserByIdSchema)
   .handler(async ({ data }) => {
-    const sessionUser = await getSessionUser()
-    await assertPermission(sessionUser.id, PERMISSIONS.USERS_VIEW)
+    await requireAdminPermission(PERMISSIONS.USERS_VIEW)
 
     const user = await UserService.getUserById(data.userId)
     const profile = await UserService.getUserProfile(data.userId)
@@ -68,12 +46,15 @@ const suspendUserSchema = z.object({
 export const suspendAdminUser = createServerFn({ method: 'POST' })
   .inputValidator(suspendUserSchema)
   .handler(async ({ data }) => {
-    const sessionUser = await getSessionUser()
-    await assertPermission(sessionUser.id, PERMISSIONS.USERS_SUSPEND)
+    const { user: sessionUser, metadata } = await requireAdminPermission(
+      PERMISSIONS.USERS_SUSPEND,
+    )
 
     return UserService.suspendUser({
       ...data,
       suspendedBy: sessionUser.id,
+      ipAddress: metadata.ipAddress,
+      userAgent: metadata.userAgent,
     })
   })
 
@@ -85,12 +66,15 @@ const banUserSchema = z.object({
 export const banAdminUser = createServerFn({ method: 'POST' })
   .inputValidator(banUserSchema)
   .handler(async ({ data }) => {
-    const sessionUser = await getSessionUser()
-    await assertPermission(sessionUser.id, PERMISSIONS.USERS_BAN)
+    const { user: sessionUser, metadata } = await requireAdminPermission(
+      PERMISSIONS.USERS_BAN,
+    )
 
     return UserService.banUser({
       ...data,
       bannedBy: sessionUser.id,
+      ipAddress: metadata.ipAddress,
+      userAgent: metadata.userAgent,
     })
   })
 
@@ -101,11 +85,14 @@ const liftSuspensionSchema = z.object({
 export const liftUserSuspension = createServerFn({ method: 'POST' })
   .inputValidator(liftSuspensionSchema)
   .handler(async ({ data }) => {
-    const sessionUser = await getSessionUser()
-    await assertPermission(sessionUser.id, PERMISSIONS.USERS_SUSPEND)
+    const { user: sessionUser, metadata } = await requireAdminPermission(
+      PERMISSIONS.USERS_SUSPEND,
+    )
 
     return UserService.liftSuspension({
       ...data,
       liftedBy: sessionUser.id,
+      ipAddress: metadata.ipAddress,
+      userAgent: metadata.userAgent,
     })
   })

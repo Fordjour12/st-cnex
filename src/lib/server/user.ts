@@ -243,8 +243,11 @@ export class UserService {
     reason: string
     suspendedBy: string
     expiresAt?: Date
+    ipAddress?: string
+    userAgent?: string
   }) {
-    const { userId, reason, suspendedBy, expiresAt } = params
+    const { userId, reason, suspendedBy, expiresAt, ipAddress, userAgent } =
+      params
 
     await db.insert(userSuspensions).values({
       userId,
@@ -260,6 +263,8 @@ export class UserService {
       resource: 'users',
       resourceId: userId,
       details: JSON.stringify({ reason, expiresAt }),
+      ipAddress,
+      userAgent,
     })
 
     return { success: true }
@@ -269,8 +274,10 @@ export class UserService {
     userId: string
     reason: string
     bannedBy: string
+    ipAddress?: string
+    userAgent?: string
   }) {
-    const { userId, reason, bannedBy } = params
+    const { userId, reason, bannedBy, ipAddress, userAgent } = params
 
     await db.insert(userSuspensions).values({
       userId,
@@ -286,13 +293,20 @@ export class UserService {
       resource: 'users',
       resourceId: userId,
       details: JSON.stringify({ reason }),
+      ipAddress,
+      userAgent,
     })
 
     return { success: true }
   }
 
-  static async liftSuspension(params: { userId: string; liftedBy: string }) {
-    const { userId, liftedBy } = params
+  static async liftSuspension(params: {
+    userId: string
+    liftedBy: string
+    ipAddress?: string
+    userAgent?: string
+  }) {
+    const { userId, liftedBy, ipAddress, userAgent } = params
 
     await db
       .update(userSuspensions)
@@ -311,6 +325,8 @@ export class UserService {
       resource: 'users',
       resourceId: userId,
       details: JSON.stringify({ action: 'lifted' }),
+      ipAddress,
+      userAgent,
     })
 
     return { success: true }

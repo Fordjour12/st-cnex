@@ -1,10 +1,23 @@
-import { Outlet, createFileRoute } from '@tanstack/react-router'
+import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+import { getAdminSession } from '@/lib/server/admin/session'
 import { DashboardSidebar } from '@/components/sidebar-03/app-sidebar'
 
 export const Route = createFileRoute('/admin/_layout')({
-  loader: async () => ({}),
+  loader: async () => {
+    const session = await getAdminSession()
+
+    if (!session.authenticated) {
+      throw redirect({ to: '/auth/sign-in' })
+    }
+
+    if (!session.isAdmin) {
+      throw redirect({ to: '/' })
+    }
+
+    return { user: session.user }
+  },
   component: AdminLayout,
 })
 

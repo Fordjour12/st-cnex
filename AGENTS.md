@@ -30,7 +30,10 @@ pnpm test            # Run all tests once
 pnpm test --watch    # Run tests in watch mode
 
 # Run a single test file
-pnpm test path/to/test-file.test.ts
+pnpm test src/path/to/test-file.test.ts
+
+# Run tests matching a pattern
+pnpm test --watch "user"
 
 # Database (Drizzle ORM)
 pnpm db:generate     # Generate migrations
@@ -45,6 +48,7 @@ pnpm db:studio       # Open DB studio UI
 - Use path aliases: `@/*` maps to `./src/*`
 - Order imports: external libs → internal libs → components
 - Example: `import { cn } from "@/lib/utils"`
+- Always destructure props with explicit type annotations in components
 
 ### TypeScript
 
@@ -80,6 +84,16 @@ pnpm db:studio       # Open DB studio UI
 - Use TanStack Router for routing (`@tanstack/react-router`)
 - Create routes in `src/routes/` directory using file-based routing
 - Use `createFileRoute()` for route definitions
+- Always destructure props with explicit type annotations
+- Keep components focused and small (single responsibility)
+
+### Component Structure
+
+- UI components in `src/components/ui/`
+- Feature components in `src/components/[feature]/`
+- Use cva for component variants with discriminated unions
+- Export components as named exports
+- Co-locate tests with components when possible
 
 ## Testing (Vitest)
 
@@ -87,9 +101,11 @@ pnpm db:studio       # Open DB studio UI
 - Test files: `*.test.ts` or `*.test.tsx` pattern
 - Run tests: `pnpm test`
 - Watch mode: `pnpm test --watch`
-- Single file: `pnpm test path/to/test-file.test.ts`
+- Single file: `pnpm test src/path/to/test-file.test.ts`
 - Use `describe` blocks for test suites, `it` or `test` for individual tests
 - Follow existing test patterns in the codebase
+- Use `vi.fn()` for mocking functions
+- Wrap components with `render()` from RTL for component tests
 
 ## Error Handling
 

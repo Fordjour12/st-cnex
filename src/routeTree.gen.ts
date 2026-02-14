@@ -17,9 +17,11 @@ import { Route as AuthLayoutSignInRouteImport } from './routes/auth/_layout/sign
 import { Route as AuthLayoutCreateAccountRouteImport } from './routes/auth/_layout/create-account'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AdminLayoutUsersIndexRouteImport } from './routes/admin/_layout/users/index'
+import { Route as AdminLayoutReportsIndexRouteImport } from './routes/admin/_layout/reports/index'
 import { Route as AuthLayoutAdminSignInRouteImport } from './routes/auth/_layout/admin/sign-in'
 import { Route as AuthLayoutAdminResetPasswordRouteImport } from './routes/auth/_layout/admin/reset-password'
 import { Route as AdminLayoutUsersUserIdRouteImport } from './routes/admin/_layout/users/$userId'
+import { Route as AdminLayoutReportsReportIdRouteImport } from './routes/admin/_layout/reports/$reportId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -61,6 +63,11 @@ const AdminLayoutUsersIndexRoute = AdminLayoutUsersIndexRouteImport.update({
   path: '/users/',
   getParentRoute: () => AdminLayoutRoute,
 } as any)
+const AdminLayoutReportsIndexRoute = AdminLayoutReportsIndexRouteImport.update({
+  id: '/reports/',
+  path: '/reports/',
+  getParentRoute: () => AdminLayoutRoute,
+} as any)
 const AuthLayoutAdminSignInRoute = AuthLayoutAdminSignInRouteImport.update({
   id: '/admin/sign-in',
   path: '/admin/sign-in',
@@ -77,6 +84,12 @@ const AdminLayoutUsersUserIdRoute = AdminLayoutUsersUserIdRouteImport.update({
   path: '/users/$userId',
   getParentRoute: () => AdminLayoutRoute,
 } as any)
+const AdminLayoutReportsReportIdRoute =
+  AdminLayoutReportsReportIdRouteImport.update({
+    id: '/reports/$reportId',
+    path: '/reports/$reportId',
+    getParentRoute: () => AdminLayoutRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -90,6 +103,8 @@ export interface FileRoutesByFullPath {
   '/auth/admin/reset-password': typeof AuthLayoutAdminResetPasswordRoute
   '/auth/admin/sign-in': typeof AuthLayoutAdminSignInRoute
   '/admin/users/': typeof AdminLayoutUsersIndexRoute
+  '/admin/reports/': typeof AdminLayoutReportsIndexRoute
+  '/admin/reports/$reportId': typeof AdminLayoutReportsReportIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,6 +117,8 @@ export interface FileRoutesByTo {
   '/auth/admin/reset-password': typeof AuthLayoutAdminResetPasswordRoute
   '/auth/admin/sign-in': typeof AuthLayoutAdminSignInRoute
   '/admin/users': typeof AdminLayoutUsersIndexRoute
+  '/admin/reports': typeof AdminLayoutReportsIndexRoute
+  '/admin/reports/$reportId': typeof AdminLayoutReportsReportIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,6 +133,8 @@ export interface FileRoutesById {
   '/auth/_layout/admin/reset-password': typeof AuthLayoutAdminResetPasswordRoute
   '/auth/_layout/admin/sign-in': typeof AuthLayoutAdminSignInRoute
   '/admin/_layout/users/': typeof AdminLayoutUsersIndexRoute
+  '/admin/_layout/reports/': typeof AdminLayoutReportsIndexRoute
+  '/admin/_layout/reports/$reportId': typeof AdminLayoutReportsReportIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +150,8 @@ export interface FileRouteTypes {
     | '/auth/admin/reset-password'
     | '/auth/admin/sign-in'
     | '/admin/users/'
+    | '/admin/reports/'
+    | '/admin/reports/$reportId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -143,6 +164,8 @@ export interface FileRouteTypes {
     | '/auth/admin/reset-password'
     | '/auth/admin/sign-in'
     | '/admin/users'
+    | '/admin/reports'
+    | '/admin/reports/$reportId'
   id:
     | '__root__'
     | '/'
@@ -156,6 +179,8 @@ export interface FileRouteTypes {
     | '/auth/_layout/admin/reset-password'
     | '/auth/_layout/admin/sign-in'
     | '/admin/_layout/users/'
+    | '/admin/_layout/reports/'
+    | '/admin/_layout/reports/$reportId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -223,6 +248,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLayoutUsersIndexRouteImport
       parentRoute: typeof AdminLayoutRoute
     }
+    '/admin/_layout/reports/': {
+      id: '/admin/_layout/reports/'
+      path: '/reports'
+      fullPath: '/admin/reports/'
+      preLoaderRoute: typeof AdminLayoutReportsIndexRouteImport
+      parentRoute: typeof AdminLayoutRoute
+    }
     '/auth/_layout/admin/sign-in': {
       id: '/auth/_layout/admin/sign-in'
       path: '/admin/sign-in'
@@ -244,6 +276,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLayoutUsersUserIdRouteImport
       parentRoute: typeof AdminLayoutRoute
     }
+    '/admin/_layout/reports/$reportId': {
+      id: '/admin/_layout/reports/$reportId'
+      path: '/reports/$reportId'
+      fullPath: '/admin/reports/$reportId'
+      preLoaderRoute: typeof AdminLayoutReportsReportIdRouteImport
+      parentRoute: typeof AdminLayoutRoute
+    }
   }
 }
 
@@ -251,12 +290,16 @@ interface AdminLayoutRouteChildren {
   AdminLayoutIndexRoute: typeof AdminLayoutIndexRoute
   AdminLayoutUsersUserIdRoute: typeof AdminLayoutUsersUserIdRoute
   AdminLayoutUsersIndexRoute: typeof AdminLayoutUsersIndexRoute
+  AdminLayoutReportsIndexRoute: typeof AdminLayoutReportsIndexRoute
+  AdminLayoutReportsReportIdRoute: typeof AdminLayoutReportsReportIdRoute
 }
 
 const AdminLayoutRouteChildren: AdminLayoutRouteChildren = {
   AdminLayoutIndexRoute: AdminLayoutIndexRoute,
   AdminLayoutUsersUserIdRoute: AdminLayoutUsersUserIdRoute,
   AdminLayoutUsersIndexRoute: AdminLayoutUsersIndexRoute,
+  AdminLayoutReportsIndexRoute: AdminLayoutReportsIndexRoute,
+  AdminLayoutReportsReportIdRoute: AdminLayoutReportsReportIdRoute,
 }
 
 const AdminLayoutRouteWithChildren = AdminLayoutRoute._addFileChildren(

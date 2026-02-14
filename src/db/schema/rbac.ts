@@ -1,12 +1,12 @@
 import {
-  pgTable,
-  varchar,
-  text,
-  timestamp,
-  serial,
+  index,
   integer,
   pgEnum,
-  index,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+  varchar,
 } from 'drizzle-orm/pg-core'
 
 export const actionTypeEnum = pgEnum('action_type', [
@@ -15,6 +15,20 @@ export const actionTypeEnum = pgEnum('action_type', [
   'user_verified',
   'report_resolved',
   'role_assigned',
+])
+
+export const reportStatusEnum = pgEnum('report_status', [
+  'pending',
+  'reviewing',
+  'resolved',
+  'dismissed',
+])
+
+export const reportTypeEnum = pgEnum('report_type', [
+  'user',
+  'message',
+  'profile',
+  'content',
 ])
 
 export const roles = pgTable('roles', {
@@ -111,5 +125,28 @@ export const auditLogs = pgTable(
       table.targetUserId,
     ),
     createdAtIdx: index('audit_logs_created_at_idx').on(table.createdAt),
+  }),
+)
+
+export const reports = pgTable(
+  'reports',
+  {
+    id: serial('id').primaryKey(),
+    reporterId: varchar('reporter_id', { length: 255 }),
+    reportedUserId: varchar('reported_user_id', { length: 255 }).notNull(),
+    reportType: reportTypeEnum('report_type').notNull(),
+    reason: text('reason').notNull(),
+    description: text('description'),
+    status: reportStatusEnum('status').default('pending').notNull(),
+    reviewedBy: varchar('reviewed_by', { length: 255 }),
+    reviewedAt: timestamp('reviewed_at'),
+    resolution: text('resolution'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    statusIdx: index('reports_status_idx').on(table.status),
+    reportedUserIdx: index('reports_reported_user_idx').on(table.reportedUserId),
+    createdAtIdx: index('reports_created_at_idx').on(table.createdAt),
   }),
 )

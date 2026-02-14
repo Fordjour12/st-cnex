@@ -4,7 +4,7 @@ type AdminAccessStateProps = {
   title: string
   description: string
   ctaLabel: string
-  ctaTo: '/' | '/auth/sign-in' | '/admin/users'
+  ctaTo: '/' | '/auth/sign-in' | '/admin/users' | '/admin/reports'
 }
 
 export function AdminAccessState({

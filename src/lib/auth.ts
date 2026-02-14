@@ -19,6 +19,20 @@ export const auth = betterAuth({
     schema: schema,
   }),
   trustedOrigins: [corsOrigin],
+  rateLimit: {
+    enabled: true,
+    window: 60,
+    max: 100,
+  },
+  advanced: {
+    useSecureCookies: process.env.NODE_ENV === 'production',
+    defaultCookieAttributes: {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+    },
+  },
   emailAndPassword: {
     enabled: true,
   },
