@@ -1502,18 +1502,18 @@ function AdminUsersPage() {
 
 **Sprint 4.1: Analytics Dashboard**
 
-- [ ] Build AnalyticsService
-- [ ] Create analytics server functions
-- [ ] Build dashboard with charts (Recharts)
-- [ ] Implement DAU/MAU tracking
-- [ ] Add export functionality
+- [x] Build AnalyticsService
+- [x] Create analytics server functions
+- [x] Build dashboard with charts (Recharts)
+- [x] Implement DAU/MAU tracking
+- [x] Add export functionality
 
 **Sprint 4.2: Investor Verification**
 
-- [ ] Build verification queue
-- [ ] Create verification review UI
-- [ ] Implement approve/reject workflow
-- [ ] Add verification notifications
+- [x] Build verification queue
+- [x] Create verification review UI
+- [x] Implement approve/reject workflow
+- [x] Add verification notifications
 
 ---
 

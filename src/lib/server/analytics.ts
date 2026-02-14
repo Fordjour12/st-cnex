@@ -1,12 +1,13 @@
+import { and, desc, eq, gte, lte, sql } from 'drizzle-orm'
+
 import { db } from '@/db'
-import { user } from '@/db/schema/auth'
+import { session, user } from '@/db/schema/auth'
 import {
   founderProfiles,
   investorProfiles,
   talentProfiles,
 } from '@/db/schema/profile'
-import { reports, auditLogs } from '@/db/schema/rbac'
-import { sql, and, gte, lte, eq, desc } from 'drizzle-orm'
+import { auditLogs, reports } from '@/db/schema/rbac'
 
 export interface PlatformStats {
   totalUsers: number
@@ -30,6 +31,11 @@ export interface ActiveUsersData {
 export interface VerificationStats {
   status: 'pending' | 'verified' | 'rejected'
   count: number
+}
+
+export interface DauMauStats {
+  dau: number
+  mau: number
 }
 
 export class AnalyticsService {
@@ -76,7 +82,7 @@ export class AnalyticsService {
     startDate: Date
     endDate: Date
     interval?: 'day' | 'week' | 'month'
-  }): Promise<UserGrowthData[]> {
+  }): Promise<Array<UserGrowthData>> {
     const { startDate, endDate, interval = 'day' } = params
 
     const result = await db
@@ -95,7 +101,7 @@ export class AnalyticsService {
     }))
   }
 
-  static async getInvestorVerificationStats(): Promise<VerificationStats[]> {
+  static async getInvestorVerificationStats(): Promise<Array<VerificationStats>> {
     const result = await db
       .select({
         status: investorProfiles.verificationStatus,
@@ -105,13 +111,13 @@ export class AnalyticsService {
       .groupBy(investorProfiles.verificationStatus)
 
     return result.map((r) => ({
-      status: r.status as 'pending' | 'verified' | 'rejected',
+      status: r.status,
       count: r.count,
     }))
   }
 
   static async getRecentAuditLogs(params: { limit?: number }): Promise<
-    {
+    Array<{
       id: string
       userId: string | null
       targetUserId: string | null
@@ -119,7 +125,7 @@ export class AnalyticsService {
       resource: string
       details: string | null
       createdAt: Date
-    }[]
+    }>
   > {
     const { limit = 50 } = params
 
@@ -150,7 +156,7 @@ export class AnalyticsService {
       .from(user)
       .where(gte(user.createdAt, since))
 
-    return result?.count ?? 0
+    return result.count
   }
 
   static async getPendingVerifications(): Promise<number> {
@@ -159,7 +165,7 @@ export class AnalyticsService {
       .from(investorProfiles)
       .where(eq(investorProfiles.verificationStatus, 'pending'))
 
-    return result?.count ?? 0
+    return result.count
   }
 
   static async getPendingReports(): Promise<number> {
@@ -168,6 +174,50 @@ export class AnalyticsService {
       .from(reports)
       .where(eq(reports.status, 'pending'))
 
-    return result?.count ?? 0
+    return result.count
+  }
+
+  static async getDauMauStats(): Promise<DauMauStats> {
+    const now = new Date()
+    const dayAgo = new Date(now)
+    dayAgo.setDate(dayAgo.getDate() - 1)
+    const monthAgo = new Date(now)
+    monthAgo.setDate(monthAgo.getDate() - 30)
+
+    const [dauResult, mauResult] = await Promise.all([
+      db
+        .select({ count: sql<number>`count(distinct ${session.userId})::int` })
+        .from(session)
+        .where(gte(session.updatedAt, dayAgo)),
+      db
+        .select({ count: sql<number>`count(distinct ${session.userId})::int` })
+        .from(session)
+        .where(gte(session.updatedAt, monthAgo)),
+    ])
+
+    return {
+      dau: dauResult[0].count,
+      mau: mauResult[0].count,
+    }
+  }
+
+  static async getDailyActiveUsers(params: {
+    startDate: Date
+    endDate: Date
+  }): Promise<Array<ActiveUsersData>> {
+    const result = await db
+      .select({
+        date: sql<string>`date_trunc('day', ${session.updatedAt})`,
+        uniqueUsers: sql<number>`count(distinct ${session.userId})::int`,
+      })
+      .from(session)
+      .where(and(gte(session.updatedAt, params.startDate), lte(session.updatedAt, params.endDate)))
+      .groupBy(sql`date_trunc('day', ${session.updatedAt})`)
+      .orderBy(sql`date_trunc('day', ${session.updatedAt})`)
+
+    return result.map((entry) => ({
+      date: entry.date.toString(),
+      uniqueUsers: entry.uniqueUsers,
+    }))
   }
 }

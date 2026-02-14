@@ -1,12 +1,29 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { getRequestHeaders } from '@tanstack/react-start/server'
 import { useState } from 'react'
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  XAxis,
+  YAxis,
+} from 'recharts'
+import type { ChartConfig } from '@/components/ui/chart'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { auth } from '@/lib/auth'
+import {
+  exportAdminAnalyticsCsv,
+  getAdminAnalyticsDashboard,
+} from '@/lib/server/admin/analytics'
 import {
   calculateUserRisk,
   createAnnouncement,
@@ -19,7 +36,6 @@ import {
   upsertFeatureToggle,
   upsertSystemSetting,
 } from '@/lib/server/admin/moderation-and-system'
-import { AnalyticsService } from '@/lib/server/analytics'
 import {
   Phase4ModerationService,
   Phase4SystemService,
@@ -34,27 +50,14 @@ export const Route = createFileRoute('/admin/_layout/')({
       throw new Error('Unauthorized')
     }
 
-    const [
-      stats,
-      verificationStats,
-      newSignups7d,
-      newSignups30d,
-      moderation,
-      system,
-    ] = await Promise.all([
-      AnalyticsService.getPlatformStats(),
-      AnalyticsService.getInvestorVerificationStats(),
-      AnalyticsService.getNewSignups({ days: 7 }),
-      AnalyticsService.getNewSignups({ days: 30 }),
+    const [analytics, moderation, system] = await Promise.all([
+      getAdminAnalyticsDashboard({ data: { days: 30 } }),
       Phase4ModerationService.getModerationOverview(),
       Phase4SystemService.getSystemOverview(),
     ])
 
     return {
-      stats,
-      verificationStats,
-      newSignups7d,
-      newSignups30d,
+      analytics,
       moderation,
       system,
     }
@@ -62,28 +65,31 @@ export const Route = createFileRoute('/admin/_layout/')({
   component: AdminDashboard,
 })
 
-interface Stats {
-  totalUsers: number
-  totalFounders: number
-  totalInvestors: number
-  totalTalent: number
-  pendingReports: number
-  verifiedInvestors: number
-}
-
 interface LoaderData {
-  stats: Stats
-  verificationStats: Array<{ status: string; count: number }>
-  newSignups7d: number
-  newSignups30d: number
+  analytics: Awaited<ReturnType<typeof getAdminAnalyticsDashboard>>
   moderation: Awaited<ReturnType<typeof Phase4ModerationService.getModerationOverview>>
   system: Awaited<ReturnType<typeof Phase4SystemService.getSystemOverview>>
 }
 
+const growthChartConfig = {
+  count: {
+    label: 'New Users',
+    color: 'hsl(var(--primary))',
+  },
+} satisfies ChartConfig
+
+const activeChartConfig = {
+  uniqueUsers: {
+    label: 'Active Users',
+    color: 'hsl(var(--chart-2))',
+  },
+} satisfies ChartConfig
+
 function AdminDashboard() {
   const data = Route.useLoaderData() as unknown as LoaderData
   const router = useRouter()
-  const { stats, verificationStats, newSignups7d, moderation, system } = data
+  const { analytics, moderation, system } = data
+  const { stats, verificationStats, dauMau, growth, activeUsersTrend } = analytics
 
   const pendingVerifications =
     verificationStats.find((v) => v.status === 'pending')?.count ?? 0
@@ -102,6 +108,29 @@ function AdminDashboard() {
   const [status, setStatus] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [exporting, setExporting] = useState(false)
+
+  const handleExport = async () => {
+    setExporting(true)
+    setError(null)
+    try {
+      const payload = await exportAdminAnalyticsCsv({ data: { days: 30 } })
+      const blob = new Blob([payload.csv], { type: payload.contentType })
+      const url = window.URL.createObjectURL(blob)
+      const anchor = document.createElement('a')
+      anchor.href = url
+      anchor.download = payload.filename
+      document.body.append(anchor)
+      anchor.click()
+      anchor.remove()
+      window.URL.revokeObjectURL(url)
+      setStatus('Analytics export generated.')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Export failed')
+    } finally {
+      setExporting(false)
+    }
+  }
 
   const run = async (action: () => Promise<unknown>, successMessage: string) => {
     setBusy(true)
@@ -125,10 +154,81 @@ function AdminDashboard() {
       {error ? <p className='text-sm text-destructive'>{error}</p> : null}
 
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-        <StatCard title='Total Users' value={stats.totalUsers} note={`+${newSignups7d} this week`} />
+        <StatCard title='Total Users' value={stats.totalUsers} note='Last 30 days tracked' />
         <StatCard title='Pending Reports' value={stats.pendingReports} note='Needs review' />
         <StatCard title='Pending Verifications' value={pendingVerifications} note='Investor queue' />
-        <StatCard title='Open Fraud Flags' value={moderation.stats.openFlags} note='Phase 4 moderation' />
+        <StatCard title='DAU / MAU' value={dauMau.dau} note={`MAU ${dauMau.mau}`} />
+      </div>
+
+      <div className='grid gap-6 xl:grid-cols-2'>
+        <Card>
+          <CardHeader className='flex flex-row items-center justify-between space-y-0'>
+            <CardTitle>New Users (30 Days)</CardTitle>
+            <Button variant='outline' onClick={() => void handleExport()} disabled={exporting}>
+              {exporting ? 'Exporting...' : 'Export CSV'}
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer
+              className='h-[280px] w-full'
+              config={growthChartConfig}
+            >
+              <LineChart data={growth}>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey='date'
+                  tickFormatter={(value) =>
+                    new Date(value as string).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                />
+                <YAxis allowDecimals={false} />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Line
+                  type='monotone'
+                  dataKey='count'
+                  stroke='var(--color-count)'
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Daily Active Users (DAU Trend)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer
+              className='h-[280px] w-full'
+              config={activeChartConfig}
+            >
+              <LineChart data={activeUsersTrend}>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey='date'
+                  tickFormatter={(value) =>
+                    new Date(value as string).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                />
+                <YAxis allowDecimals={false} />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Line
+                  type='monotone'
+                  dataKey='uniqueUsers'
+                  stroke='var(--color-uniqueUsers)'
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
       </div>
 
       <div className='grid gap-6 xl:grid-cols-2'>
