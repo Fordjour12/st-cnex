@@ -1,8 +1,11 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Outlet, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import appCss from '../styles.css?url'
+import { RootErrorBoundary } from '@/components/root-error-boundary'
+import { RootNotFound } from '@/components/root-not-found'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -25,18 +28,20 @@ export const Route = createRootRoute({
       },
     ],
   }),
-
+  component: RootComponent,
+  errorComponent: RootErrorBoundary,
+  notFoundComponent: RootNotFound,
   shellComponent: RootDocument,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang='en'>
       <head>
         <HeadContent />
       </head>
       <body>
-        {children}
+        <TooltipProvider>{children}</TooltipProvider>
         <TanStackDevtools
           config={{
             position: 'bottom-right',
@@ -52,4 +57,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </body>
     </html>
   )
+}
+
+function RootComponent() {
+  return <Outlet />
 }

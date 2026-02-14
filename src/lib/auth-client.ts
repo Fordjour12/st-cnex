@@ -22,21 +22,24 @@ export type SignUpData = {
 }
 
 export async function clientSignIn(data: SignInData) {
-  const { signIn } = await import('@/lib/server/auth')
-  return signIn({ data })
+  return authClient.signIn.email({
+    email: data.email,
+    password: data.password,
+  })
 }
 
 export async function clientSignUp(data: SignUpData) {
-  const { signUp } = await import('@/lib/server/auth')
-  return signUp({ data })
+  return authClient.signUp.email({
+    email: data.email,
+    password: data.password,
+    name: data.name,
+  })
 }
 
 export async function clientSignOut() {
-  const { signOut } = await import('@/lib/server/auth')
-  return signOut({})
+  return authClient.signOut()
 }
 
 export async function clientGetSession() {
-  const { getSession } = await import('@/lib/server/auth')
-  return getSession({})
+  return authClient.getSession()
 }

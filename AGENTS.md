@@ -49,9 +49,15 @@ pnpm db:studio       # Open DB studio UI
 ### TypeScript
 
 - Enable strict mode (`strict: true` in tsconfig)
+- Additional strict settings enabled:
+  - `noUnusedLocals`: true - Warn on unused local variables
+  - `noUnusedParameters`: true - Warn on unused function parameters
+  - `noFallthroughCasesInSwitch`: true - Require all switch cases to break/return
+  - `noUncheckedSideEffectImports`: true - Check side effect imports
 - Always use explicit types for function params and return types
 - Use `type` for unions/intersections, `interface` for object shapes
 - Avoid `any`, use `unknown` when type is truly unknown
+- Use `@ts-check` for JSDoc type checking in .js files
 
 ### Naming Conventions
 
@@ -75,12 +81,29 @@ pnpm db:studio       # Open DB studio UI
 - Create routes in `src/routes/` directory using file-based routing
 - Use `createFileRoute()` for route definitions
 
-### Error Handling
+## Testing (Vitest)
+
+- Tests use Vitest with React Testing Library
+- Test files: `*.test.ts` or `*.test.tsx` pattern
+- Run tests: `pnpm test`
+- Watch mode: `pnpm test --watch`
+- Single file: `pnpm test path/to/test-file.test.ts`
+- Use `describe` blocks for test suites, `it` or `test` for individual tests
+- Follow existing test patterns in the codebase
+
+## Error Handling
 
 - Use Zod for runtime validation
 - Use `try/catch` for async operations
 - Throw descriptive errors with context
 - Use error boundaries for component failures
+- Handle API errors with proper error types
+
+## State Management
+
+- Use TanStack Query for server state (`@tanstack/react-query`)
+- Use React Context for global client state
+- Keep state as local as possible, lift only when needed
 
 ### CSS & Styling
 
@@ -94,6 +117,20 @@ pnpm db:studio       # Open DB studio UI
 - Use `drizzle-orm` for queries
 - Migrations in `drizzle/` directory
 - Requires `DATABASE_URL` environment variable
+
+### Data Fetching
+
+- Use TanStack Query (`@tanstack/react-query`) for server state
+- Prefer `useSuspenseQuery` over `useQuery` for Suspense-first patterns
+- Use query keys with meaningful prefixes (e.g., `['users', userId]`)
+- Implement proper cache invalidation after mutations
+
+### API Patterns
+
+- Use TanStack Router's server functions for API routes
+- Define API routes in route modules using `createFileRoute()`
+- Validate request payloads with Zod schemas
+- Return typed responses from server functions
 
 ### Available Skills
 

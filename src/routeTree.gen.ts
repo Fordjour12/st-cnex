@@ -10,33 +10,148 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthLayoutRouteImport } from './routes/auth/_layout'
+import { Route as AdminUsersRouteImport } from './routes/admin/users'
+import { Route as AdminLayoutRouteImport } from './routes/admin/_layout'
+import { Route as AdminLayoutIndexRouteImport } from './routes/admin/_layout/index'
+import { Route as AuthLayoutSignInRouteImport } from './routes/auth/_layout/sign-in'
+import { Route as AuthLayoutCreateAccountRouteImport } from './routes/auth/_layout/create-account'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as AuthLayoutAdminSignInRouteImport } from './routes/auth/_layout/admin/sign-in'
+import { Route as AuthLayoutAdminResetPasswordRouteImport } from './routes/auth/_layout/admin/reset-password'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthLayoutRoute = AuthLayoutRouteImport.update({
+  id: '/auth/_layout',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLayoutRoute = AdminLayoutRouteImport.update({
+  id: '/admin/_layout',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLayoutIndexRoute = AdminLayoutIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminLayoutRoute,
+} as any)
+const AuthLayoutSignInRoute = AuthLayoutSignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => AuthLayoutRoute,
+} as any)
+const AuthLayoutCreateAccountRoute = AuthLayoutCreateAccountRouteImport.update({
+  id: '/create-account',
+  path: '/create-account',
+  getParentRoute: () => AuthLayoutRoute,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLayoutAdminSignInRoute = AuthLayoutAdminSignInRouteImport.update({
+  id: '/admin/sign-in',
+  path: '/admin/sign-in',
+  getParentRoute: () => AuthLayoutRoute,
+} as any)
+const AuthLayoutAdminResetPasswordRoute =
+  AuthLayoutAdminResetPasswordRouteImport.update({
+    id: '/admin/reset-password',
+    path: '/admin/reset-password',
+    getParentRoute: () => AuthLayoutRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminLayoutRouteWithChildren
+  '/admin/users': typeof AdminUsersRoute
+  '/auth': typeof AuthLayoutRouteWithChildren
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/auth/create-account': typeof AuthLayoutCreateAccountRoute
+  '/auth/sign-in': typeof AuthLayoutSignInRoute
+  '/admin/': typeof AdminLayoutIndexRoute
+  '/auth/admin/reset-password': typeof AuthLayoutAdminResetPasswordRoute
+  '/auth/admin/sign-in': typeof AuthLayoutAdminSignInRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/auth': typeof AuthLayoutRouteWithChildren
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/auth/create-account': typeof AuthLayoutCreateAccountRoute
+  '/auth/sign-in': typeof AuthLayoutSignInRoute
+  '/admin': typeof AdminLayoutIndexRoute
+  '/auth/admin/reset-password': typeof AuthLayoutAdminResetPasswordRoute
+  '/auth/admin/sign-in': typeof AuthLayoutAdminSignInRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin/_layout': typeof AdminLayoutRouteWithChildren
+  '/admin/users': typeof AdminUsersRoute
+  '/auth/_layout': typeof AuthLayoutRouteWithChildren
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/auth/_layout/create-account': typeof AuthLayoutCreateAccountRoute
+  '/auth/_layout/sign-in': typeof AuthLayoutSignInRoute
+  '/admin/_layout/': typeof AdminLayoutIndexRoute
+  '/auth/_layout/admin/reset-password': typeof AuthLayoutAdminResetPasswordRoute
+  '/auth/_layout/admin/sign-in': typeof AuthLayoutAdminSignInRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/admin/users'
+    | '/auth'
+    | '/api/auth/$'
+    | '/auth/create-account'
+    | '/auth/sign-in'
+    | '/admin/'
+    | '/auth/admin/reset-password'
+    | '/auth/admin/sign-in'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin/users'
+    | '/auth'
+    | '/api/auth/$'
+    | '/auth/create-account'
+    | '/auth/sign-in'
+    | '/admin'
+    | '/auth/admin/reset-password'
+    | '/auth/admin/sign-in'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin/_layout'
+    | '/admin/users'
+    | '/auth/_layout'
+    | '/api/auth/$'
+    | '/auth/_layout/create-account'
+    | '/auth/_layout/sign-in'
+    | '/admin/_layout/'
+    | '/auth/_layout/admin/reset-password'
+    | '/auth/_layout/admin/sign-in'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminLayoutRoute: typeof AdminLayoutRouteWithChildren
+  AdminUsersRoute: typeof AdminUsersRoute
+  AuthLayoutRoute: typeof AuthLayoutRouteWithChildren
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +163,108 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/_layout': {
+      id: '/auth/_layout'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthLayoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/_layout': {
+      id: '/admin/_layout'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminLayoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/_layout/': {
+      id: '/admin/_layout/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminLayoutIndexRouteImport
+      parentRoute: typeof AdminLayoutRoute
+    }
+    '/auth/_layout/sign-in': {
+      id: '/auth/_layout/sign-in'
+      path: '/sign-in'
+      fullPath: '/auth/sign-in'
+      preLoaderRoute: typeof AuthLayoutSignInRouteImport
+      parentRoute: typeof AuthLayoutRoute
+    }
+    '/auth/_layout/create-account': {
+      id: '/auth/_layout/create-account'
+      path: '/create-account'
+      fullPath: '/auth/create-account'
+      preLoaderRoute: typeof AuthLayoutCreateAccountRouteImport
+      parentRoute: typeof AuthLayoutRoute
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/_layout/admin/sign-in': {
+      id: '/auth/_layout/admin/sign-in'
+      path: '/admin/sign-in'
+      fullPath: '/auth/admin/sign-in'
+      preLoaderRoute: typeof AuthLayoutAdminSignInRouteImport
+      parentRoute: typeof AuthLayoutRoute
+    }
+    '/auth/_layout/admin/reset-password': {
+      id: '/auth/_layout/admin/reset-password'
+      path: '/admin/reset-password'
+      fullPath: '/auth/admin/reset-password'
+      preLoaderRoute: typeof AuthLayoutAdminResetPasswordRouteImport
+      parentRoute: typeof AuthLayoutRoute
+    }
   }
 }
 
+interface AdminLayoutRouteChildren {
+  AdminLayoutIndexRoute: typeof AdminLayoutIndexRoute
+}
+
+const AdminLayoutRouteChildren: AdminLayoutRouteChildren = {
+  AdminLayoutIndexRoute: AdminLayoutIndexRoute,
+}
+
+const AdminLayoutRouteWithChildren = AdminLayoutRoute._addFileChildren(
+  AdminLayoutRouteChildren,
+)
+
+interface AuthLayoutRouteChildren {
+  AuthLayoutCreateAccountRoute: typeof AuthLayoutCreateAccountRoute
+  AuthLayoutSignInRoute: typeof AuthLayoutSignInRoute
+  AuthLayoutAdminResetPasswordRoute: typeof AuthLayoutAdminResetPasswordRoute
+  AuthLayoutAdminSignInRoute: typeof AuthLayoutAdminSignInRoute
+}
+
+const AuthLayoutRouteChildren: AuthLayoutRouteChildren = {
+  AuthLayoutCreateAccountRoute: AuthLayoutCreateAccountRoute,
+  AuthLayoutSignInRoute: AuthLayoutSignInRoute,
+  AuthLayoutAdminResetPasswordRoute: AuthLayoutAdminResetPasswordRoute,
+  AuthLayoutAdminSignInRoute: AuthLayoutAdminSignInRoute,
+}
+
+const AuthLayoutRouteWithChildren = AuthLayoutRoute._addFileChildren(
+  AuthLayoutRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminLayoutRoute: AdminLayoutRouteWithChildren,
+  AdminUsersRoute: AdminUsersRoute,
+  AuthLayoutRoute: AuthLayoutRouteWithChildren,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
