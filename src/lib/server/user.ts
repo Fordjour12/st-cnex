@@ -5,8 +5,8 @@ import {
   investorProfiles,
   talentProfiles,
 } from '@/db/schema/profile'
-import { auditLogs } from '@/db/schema/rbac'
-import { eq, ilike, desc, asc, sql } from 'drizzle-orm'
+import { auditLogs, userSuspensions } from '@/db/schema/rbac'
+import { eq, ilike, desc, asc, sql, and, isNull, or, gte } from 'drizzle-orm'
 
 export class UserService {
   static async getUsers(params: {
@@ -236,5 +236,101 @@ export class UserService {
       userAgent,
     })
     return { success: true }
+  }
+
+  static async suspendUser(params: {
+    userId: string
+    reason: string
+    suspendedBy: string
+    expiresAt?: Date
+  }) {
+    const { userId, reason, suspendedBy, expiresAt } = params
+
+    await db.insert(userSuspensions).values({
+      userId,
+      reason,
+      suspendedBy,
+      expiresAt,
+    })
+
+    await this.createAuditLog({
+      userId: suspendedBy,
+      targetUserId: userId,
+      action: 'user_suspended',
+      resource: 'users',
+      resourceId: userId,
+      details: JSON.stringify({ reason, expiresAt }),
+    })
+
+    return { success: true }
+  }
+
+  static async banUser(params: {
+    userId: string
+    reason: string
+    bannedBy: string
+  }) {
+    const { userId, reason, bannedBy } = params
+
+    await db.insert(userSuspensions).values({
+      userId,
+      reason,
+      suspendedBy: bannedBy,
+      expiresAt: null,
+    })
+
+    await this.createAuditLog({
+      userId: bannedBy,
+      targetUserId: userId,
+      action: 'user_banned',
+      resource: 'users',
+      resourceId: userId,
+      details: JSON.stringify({ reason }),
+    })
+
+    return { success: true }
+  }
+
+  static async liftSuspension(params: { userId: string; liftedBy: string }) {
+    const { userId, liftedBy } = params
+
+    await db
+      .update(userSuspensions)
+      .set({ liftedAt: new Date(), liftedBy })
+      .where(
+        and(
+          eq(userSuspensions.userId, userId),
+          isNull(userSuspensions.liftedAt),
+        ),
+      )
+
+    await this.createAuditLog({
+      userId: liftedBy,
+      targetUserId: userId,
+      action: 'user_suspended',
+      resource: 'users',
+      resourceId: userId,
+      details: JSON.stringify({ action: 'lifted' }),
+    })
+
+    return { success: true }
+  }
+
+  static async getUserSuspension(userId: string) {
+    const [suspension] = await db
+      .select()
+      .from(userSuspensions)
+      .where(
+        and(
+          eq(userSuspensions.userId, userId),
+          isNull(userSuspensions.liftedAt),
+          or(
+            isNull(userSuspensions.expiresAt),
+            gte(userSuspensions.expiresAt, new Date()),
+          ),
+        ),
+      )
+      .limit(1)
+    return suspension
   }
 }
