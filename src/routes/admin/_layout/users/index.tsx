@@ -8,6 +8,7 @@ import { AdminAccessState } from '@/components/admin-access-state'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import {
   Table,
   TableBody,
@@ -16,12 +17,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { getAdminUsers } from '@/lib/server/admin/users'
+import { createAdminUser, getAdminUsers } from '@/lib/server/admin/users'
+
+type AuthRole = 'admin' | 'user'
 
 const searchSchema = z.object({
   page: z.number().optional().default(1),
   limit: z.number().optional().default(20),
   search: z.string().optional().default(''),
+  role: z.string().optional().default(''),
   sortBy: z.enum(['createdAt', 'email']).optional().default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 })
@@ -68,6 +72,13 @@ function AdminUsersPage() {
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
   const [searchInput, setSearchInput] = useState(search.search)
+  const [newUserName, setNewUserName] = useState('')
+  const [newUserEmail, setNewUserEmail] = useState('')
+  const [newUserPassword, setNewUserPassword] = useState('')
+  const [newUserRole, setNewUserRole] = useState<AuthRole>('user')
+  const [formError, setFormError] = useState<string | null>(null)
+  const [formSuccess, setFormSuccess] = useState<string | null>(null)
+  const [isCreating, setIsCreating] = useState(false)
 
   if (!loaderData.ok) {
     if (loaderData.reason === 'unauthorized') {
@@ -123,6 +134,27 @@ function AdminUsersPage() {
           }),
       },
       {
+        accessorKey: 'role',
+        header: 'Roles',
+        cell: ({ row }) => {
+          const roleValue = row.original.role
+          const roles = roleValue
+            .split(',')
+            .map((role) => role.trim())
+            .filter(Boolean)
+
+          return (
+            <div className='flex flex-wrap gap-1'>
+              {roles.map((role) => (
+                <Badge key={role} variant='outline'>
+                  {role}
+                </Badge>
+              ))}
+            </div>
+          )
+        },
+      },
+      {
         accessorKey: 'emailVerified',
         header: 'Status',
         cell: ({ row }) => (
@@ -166,8 +198,93 @@ function AdminUsersPage() {
     })
   }
 
+  const handleCreateUser = async () => {
+    setFormError(null)
+    setFormSuccess(null)
+
+    if (!newUserName.trim()) {
+      setFormError('Name is required.')
+      return
+    }
+
+    if (!newUserEmail.trim()) {
+      setFormError('Email is required.')
+      return
+    }
+
+    if (newUserPassword.length < 8) {
+      setFormError('Password must be at least 8 characters.')
+      return
+    }
+
+    setIsCreating(true)
+    try {
+      await createAdminUser({
+        data: {
+          name: newUserName.trim(),
+          email: newUserEmail.trim(),
+          password: newUserPassword,
+          role: newUserRole,
+        },
+      })
+
+      setFormSuccess('User created successfully.')
+      setNewUserName('')
+      setNewUserEmail('')
+      setNewUserPassword('')
+      setNewUserRole('user')
+      await navigate({ to: '.', search: (prev) => ({ ...prev }) })
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to create user.'
+      setFormError(message)
+    } finally {
+      setIsCreating(false)
+    }
+  }
+
   return (
     <div className='space-y-4'>
+      <div className='rounded-md border p-4'>
+        <h2 className='mb-3 text-lg font-semibold'>Create User</h2>
+        {formError ? <p className='mb-2 text-sm text-destructive'>{formError}</p> : null}
+        {formSuccess ? <p className='mb-2 text-sm text-emerald-600'>{formSuccess}</p> : null}
+        <div className='grid gap-2 md:grid-cols-4'>
+          <Input
+            placeholder='Full name'
+            value={newUserName}
+            onChange={(event) => setNewUserName(event.target.value)}
+          />
+          <Input
+            placeholder='Email'
+            value={newUserEmail}
+            onChange={(event) => setNewUserEmail(event.target.value)}
+          />
+          <Input
+            placeholder='Temp password'
+            type='password'
+            value={newUserPassword}
+            onChange={(event) => setNewUserPassword(event.target.value)}
+          />
+          <Select
+            value={newUserRole}
+            onValueChange={(value) => setNewUserRole((value as AuthRole | null) ?? 'user')}
+          >
+            <SelectTrigger className='h-10 w-full px-3 text-sm'>
+              <SelectValue placeholder='Role' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='user'>user</SelectItem>
+              <SelectItem value='admin'>admin</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className='mt-3'>
+          <Button onClick={() => void handleCreateUser()} disabled={isCreating}>
+            {isCreating ? 'Creating...' : 'Create User'}
+          </Button>
+        </div>
+      </div>
+
       <div className='mb-6 flex items-center justify-between'>
         <h1 className='text-2xl font-bold'>User Management</h1>
         <div className='flex items-center gap-2'>
@@ -188,6 +305,29 @@ function AdminUsersPage() {
           >
             Search
           </Button>
+          <Select
+            value={search.role || 'all'}
+            onValueChange={(value) =>
+              updateSearch({
+                page: 1,
+                role: value === 'all' ? '' : (value ?? ''),
+              })
+            }
+          >
+            <SelectTrigger className='h-9 w-[150px] px-3 text-sm'>
+              <SelectValue placeholder='Filter role' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='all'>All roles</SelectItem>
+              <SelectItem value='user'>user</SelectItem>
+              <SelectItem value='admin'>admin</SelectItem>
+              <SelectItem value='super_admin'>super_admin</SelectItem>
+              <SelectItem value='moderator'>moderator</SelectItem>
+              <SelectItem value='founder'>founder</SelectItem>
+              <SelectItem value='investor'>investor</SelectItem>
+              <SelectItem value='talent'>talent</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

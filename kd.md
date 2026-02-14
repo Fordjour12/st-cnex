@@ -45,6 +45,65 @@ I'll design a production-ready admin system optimized for **TanStack Start** wit
 
 ---
 
+## 🚀 **better-auth Admin Plugin Features**
+
+This project uses the **better-auth Admin plugin** (`admin()`) which provides built-in user management APIs. The plugin adds the following capabilities:
+
+### Available Admin APIs
+
+The plugin exposes server-side APIs via `auth.api.*`:
+
+| API Method                    | Purpose                     | Implementation                         |
+| ----------------------------- | --------------------------- | -------------------------------------- |
+| `auth.api.createUser`         | Create new users            | Wrap in TanStack Start server function |
+| `auth.api.listUsers`          | List all users with filters | Use existing custom implementation     |
+| `auth.api.setRole`            | Change user roles           | Wrap in TanStack Start server function |
+| `auth.api.setUserPassword`    | Change user passwords       | Wrap in TanStack Start server function |
+| `auth.api.adminUpdateUser`    | Update user details         | Wrap in TanStack Start server function |
+| `auth.api.banUser`            | Ban users                   | Already implemented (custom)           |
+| `auth.api.unbanUser`          | Unban users                 | Use existing `liftUserSuspension`      |
+| `auth.api.listUserSessions`   | List user sessions          | Wrap in TanStack Start server function |
+| `auth.api.revokeUserSession`  | Revoke single session       | Wrap in TanStack Start server function |
+| `auth.api.revokeUserSessions` | Revoke all sessions         | Wrap in TanStack Start server function |
+| `auth.api.impersonateUser`    | Impersonate user            | Wrap in TanStack Start server function |
+| `auth.api.stopImpersonating`  | Stop impersonating          | Wrap in TanStack Start server function |
+| `auth.api.removeUser`         | Delete users                | Wrap in TanStack Start server function |
+
+### Plugin Schema Additions
+
+The Admin plugin adds these fields to the `user` table:
+
+- `role` (string) - User's role (default: "user")
+- `banned` (boolean) - Whether user is banned
+- `banReason` (string) - Reason for ban
+- `banExpires` (date) - When ban expires
+
+And adds to the `session` table:
+
+- `impersonatedBy` (string) - ID of admin impersonating this session
+
+### Configuration Options
+
+```typescript
+import { admin } from 'better-auth/plugins'
+
+export const auth = betterAuth({
+  plugins: [
+    admin({
+      adminRoles: ['admin', 'superadmin'], // Roles with admin access
+      adminUserIds: ['user_id_1'], // Specific admin user IDs
+      impersonationSessionDuration: 3600, // 1 hour default
+      defaultBanReason: 'No reason',
+      defaultBanExpiresIn: undefined, // Permanent by default
+      bannedUserMessage: 'You have been banned...',
+      allowImpersonatingAdmins: false,
+    }),
+  ],
+})
+```
+
+---
+
 ## 🗄 **Database Schema Design (Drizzle ORM + better-auth)**
 
 > **Note**: better-auth manages its own user/session tables. We only define profile-specific tables and RBAC tables.
@@ -1332,32 +1391,34 @@ function AdminUsersPage() {
 
 ## 📋 **Development Task Breakdown (better-auth)**
 
-### **Phase 1: Foundation (Week 1-2)**
+---
+
+### Phase 1A: Foundation - Auth Setup (Week 1)
 
 **Sprint 1.1: Database & Auth Setup**
 
-- [ ] Set up PostgreSQL + Drizzle ORM
-- [ ] Set up better-auth with database adapter
-- [ ] Create all database tables with indexes
+- [x] Set up PostgreSQL + Drizzle ORM
+- [x] Set up better-auth with database adapter
+- [x] Create all database tables with indexes
 - [x] Seed initial roles and permissions
-- [ ] Configure better-auth (sign in, sign up, session)
+- [x] Configure better-auth (sign in, sign up, session)
 - [ ] Set up OAuth providers (Google, GitHub)
 
 **Sprint 1.2: RBAC Implementation**
 
-- [ ] Build RBACService with permission checks
-- [ ] Create userRoles table and relations
+- [x] Build RBACService with permission checks
+- [x] Create userRoles table and relations
 - [x] Create middleware for route protection
-- [ ] Test permission enforcement
+- [x] Test permission enforcement
 - [x] Create admin user seeding script
 
 ---
 
-### **Phase 2: Core Admin Features (Week 3-4)**
+### Phase 2: Core Admin Features (Week 2-3)
 
-**Sprint 2.1: User Management**
+**Sprint 2.1: User Management (Basic)**
 
-- [ ] Build UserService (CRUD operations)
+- [x] Build UserService (CRUD operations)
 - [x] Create server functions for user management
 - [x] Build admin users list page with TanStack Table
 - [x] Implement user suspend/ban actions
@@ -1373,35 +1434,99 @@ function AdminUsersPage() {
 
 ---
 
-### **Phase 3: Analytics & Monitoring (Week 5)**
+### Phase 3: better-auth Admin Plugin Features (Week 4)
 
-**Sprint 3.1: Analytics Dashboard**
+> The better-auth Admin plugin provides built-in user management APIs. These should be wrapped with TanStack Start server functions.
 
-- [ ] Build AnalyticsService
-- [ ] Create analytics server functions
-- [ ] Build dashboard with charts (Recharts)
-- [ ] Implement DAU/MAU tracking
-- [ ] Add export functionality
+**Sprint 3.1: User Creation & Management**
 
-**Sprint 3.2: Investor Verification**
+| Feature           | Server Function        | Frontend     | Description                |
+| ----------------- | ---------------------- | ------------ | -------------------------- |
+| Create User       | `createAdminUser`      | UI Component | Create new users via admin |
+| Update User       | `updateAdminUser`      | UI Component | Update user details        |
+| Set User Password | `setAdminUserPassword` | UI Component | Change user passwords      |
+| Delete User       | `deleteAdminUser`      | UI Component | Hard delete users          |
 
-- [ ] Build verification queue
-- [ ] Create verification review UI
-- [ ] Implement approve/reject workflow
-- [ ] Add verification notifications
+**Acceptance Criteria:**
+
+- [x] Create `createAdminUser` server function wrapping `auth.api.createUser`
+- [x] Create `updateAdminUser` server function wrapping `auth.api.adminUpdateUser`
+- [x] Create `setAdminUserPassword` server function wrapping `auth.api.setUserPassword`
+- [x] Create `deleteAdminUser` server function wrapping `auth.api.removeUser`
+- [x] Build "Create User" modal/page in admin UI
+- [x] Add edit user functionality in user detail page
+- [x] Add password reset option in user actions
+- [x] Add delete user with confirmation dialog
+
+**Sprint 3.2: Role Management**
+
+| Feature       | Server Function              | Frontend     | Description       |
+| ------------- | ---------------------------- | ------------ | ----------------- |
+| Set User Role | `setUserRole`                | UI Component | Change user roles |
+| List Users    | Use existing `getAdminUsers` | -            | Filter by role    |
+
+**Acceptance Criteria:**
+
+- [x] Create `setUserRole` server function (implemented with RBAC service)
+- [x] Add role dropdown in user detail page
+- [x] Show role badges in user list
+- [x] Support multiple roles per user
+
+**Sprint 3.3: Session Management**
+
+| Feature             | Server Function         | Frontend     | Description                  |
+| ------------------- | ----------------------- | ------------ | ---------------------------- |
+| List User Sessions  | `listUserSessions`      | UI Component | List all sessions for a user |
+| Revoke Session      | `revokeUserSession`     | UI Component | Revoke specific session      |
+| Revoke All Sessions | `revokeAllUserSessions` | UI Component | Revoke all sessions          |
+| Impersonate User    | `impersonateUser`       | UI Component | Admin can impersonate users  |
+| Stop Impersonating  | `stopImpersonating`     | -            | Stop impersonating           |
+
+**Acceptance Criteria:**
+
+- [x] Create `listUserSessions` server function wrapping `auth.api.listUserSessions`
+- [x] Create `revokeUserSession` server function wrapping `auth.api.revokeUserSession`
+- [x] Create `revokeAllUserSessions` server function wrapping `auth.api.revokeUserSessions`
+- [x] Create `impersonateUser` server function wrapping `auth.api.impersonateUser`
+- [x] Create `stopImpersonating` server function wrapping `auth.api.stopImpersonating`
+- [x] Add "Sessions" tab in user detail page
+- [x] Show session list with device info, IP, last active
+- [x] Add revoke session buttons (individual and all)
+- [x] Add "Impersonate" button with confirmation
+- [x] Show visual indicator when admin is impersonating
+- [x] Log all impersonation events to audit log
 
 ---
 
-### **Phase 4: Advanced Features (Week 6+)**
+### Phase 4: Analytics & Monitoring (Week 5)
 
-**Sprint 4.1: Advanced Moderation**
+**Sprint 4.1: Analytics Dashboard**
+
+- [x] Build AnalyticsService
+- [x] Create analytics server functions
+- [x] Build dashboard with charts (Recharts)
+- [x] Implement DAU/MAU tracking
+- [x] Add export functionality
+
+**Sprint 4.2: Investor Verification**
+
+- [x] Build verification queue
+- [x] Create verification review UI
+- [x] Implement approve/reject workflow
+- [x] Add verification notifications
+
+---
+
+### Phase 5: Advanced Features (Week 6+)
+
+**Sprint 5.1: Advanced Moderation**
 
 - [x] Implement risk scoring
 - [x] Add fraud detection flags
 - [x] Build automated moderation rules
 - [x] Create warning system
 
-**Sprint 4.2: System Management**
+**Sprint 5.2: System Management**
 
 - [x] Build settings management
 - [x] Add feature toggles
@@ -1410,19 +1535,28 @@ function AdminUsersPage() {
 
 ---
 
+### Phase 6: Security Hardening (Week 7+)
+
+- [ ] Two-factor authentication (better-auth supports 2FA)
+- [ ] OAuth providers configured securely
+- [x] Role-based access enforced at DB level
+- [x] Regular permission audits
+
+---
+
 ## 🔒 **Security Checklist (better-auth)**
 
 ✅ **Authentication & Authorization**
 
-- [ ] All admin routes protected by middleware
+- [x] All admin routes protected by middleware
 - [x] All API endpoints check permissions
 - [x] better-auth session cookies properly secured (httpOnly, secure, sameSite)
-- [ ] Role-based access enforced at DB level
+- [x] Role-based access enforced at DB level
 - [ ] OAuth providers configured securely
 
 ✅ **Data Protection**
 
-- [ ] Audit logs for all admin actions
+- [x] Audit logs for all admin actions
 - [x] better-auth handles user data securely
 - [x] Input validation with Zod
 - [x] SQL injection prevention (Drizzle handles this)
@@ -1432,7 +1566,14 @@ function AdminUsersPage() {
 - [x] Rate limiting on admin endpoints
 - [x] IP logging for admin actions
 - [ ] Two-factor authentication (better-auth supports 2FA)
-- [ ] Regular permission audits
+- [x] Regular permission audits
+
+✅ **Session Management (better-auth Admin)**
+
+- [x] Session listing for users
+- [x] Session revocation (single & all)
+- [x] Impersonation with audit logging
+- [x] Impersonation duration limits
 
 _Reviewed and updated on February 14, 2026._
 

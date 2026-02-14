@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { eq } from 'drizzle-orm'
 
 import { db } from '@/db'
+import { userWarnings } from '@/db/schema/moderation-and-system'
 import { investorProfiles } from '@/db/schema/profile'
 import { PERMISSIONS } from '@/lib/permissions'
 import { requireAdminPermission } from '@/lib/server/admin/security'
@@ -37,13 +38,23 @@ export const verifyInvestor = createServerFn({ method: 'POST' })
       )
       .where(eq(investorProfiles.userId, data.userId))
 
+    await db.insert(userWarnings).values({
+      userId: data.userId,
+      warningType: 'policy',
+      message:
+        data.status === 'verified'
+          ? 'Your investor verification has been approved.'
+          : 'Your investor verification has been rejected. Please update your profile and re-submit.',
+      issuedBy: sessionUser.id,
+    })
+
     await UserService.createAuditLog({
       userId: sessionUser.id,
       targetUserId: data.userId,
       action: 'user_verified',
       resource: 'investors',
       resourceId: data.userId,
-      details: JSON.stringify({ status: data.status }),
+      details: JSON.stringify({ status: data.status, notificationSent: true }),
       ipAddress: metadata.ipAddress,
       userAgent: metadata.userAgent,
     })
